@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dduckdori.ssdam_server.Mapper.TestMapper">
+
+    <select id="getAllQuestion_notSend" resultType="com.dduckdori.ssdam_server.Scheduler.SchedulerDTO">
+        SELECT AA.CATE_ID,AA.QUST_ID,AA.INVITE_CD
+        FROM (SELECT CATE_ID,QUST_ID,A.INVITE_CD FROM SD_QUESTION,(SELECT INVITE_CD FROM SD_MEMBER GROUP BY INVITE_CD) AS A) AS AA
+                 LEFT JOIN SD_SEND_DETLSD AS BB
+                           ON AA.CATE_ID=BB.CATE_ID AND AA.QUST_ID=BB.QUST_ID AND AA.INVITE_CD=BB.INVITE_CD
+        WHERE BB.INVITE_CD IS NULL
+    </select>
+
+    <insert id="send_Question" parameterType="java.util.List">
+        INSERT INTO SD_SEND_DETLSD(CATE_ID,QUST_ID,INVITE_CD,FST_INPR,LAST_UPDR)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.Cate_id},
+            #{item.Qust_id},
+            #{item.Invite_cd},
+            '0000',
+            '0000'
+            )
+        </foreach>
+    </insert>
+</mapper>
