@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-@RestController("/ssdam")
+@RestController()
 @RequiredArgsConstructor
 public class QuestionController {
     private final QuestionService questionService;
-    @GetMapping("/question")
+    @GetMapping("/ssdam/question/{id}")
     public QuestionDTO find_Question(@PathVariable String id){
         String Invite_cd=id.split("_")[0];
         int Mem_id=Integer.parseInt(id.split("_")[1]);

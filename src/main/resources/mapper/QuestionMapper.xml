@@ -3,8 +3,8 @@
 <!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dduckdori.ssdam_server.Mapper.QuestionMapper">
 
-    <select id="getQuestion" resultType="com.dduckdori.ssdam_server.Question.QuestionDTO" parameterType="com.dduckdori.ssdam_server.Question.QuestionDTO">
-        SELECT A.MEM_ID,A.INVITE_CD, B.QUST_ID,B.CATE_ID,D.QUST_CN, C.ANS_CN,C.ANS_DTM,B.FST_INPUT_DTM,
+    <select id="find_question" resultType="com.dduckdori.ssdam_server.Question.QuestionDTO" parameterType="com.dduckdori.ssdam_server.Question.QuestionDTO">
+        SELECT A.MEM_ID,A.INVITE_CD, B.QUST_ID,B.CATE_ID,D.QUST_CN, C.ANS_CN,C.ANS_DTM,
                CASE
                    WHEN C.ANS_CN IS NULL THEN 'FALSE'
                    ELSE 'TRUE'
@@ -22,8 +22,8 @@
                             WHERE C.ANS_CN IS NULL
                             GROUP BY A.INVITE_CD) AS E
                            ON E.INVITE_CD=A.INVITE_CD
-        WHERE A.MEM_ID=#{QuestionDTO.Mem_id}
-          AND A.INVITE_CD=#{QuestionDTO.Invite_cd}
+        WHERE A.MEM_ID=#{Mem_id}
+          AND A.INVITE_CD=#{Invite_cd}
         ORDER BY B.FST_INPUT_DTM DESC
     </select>
 

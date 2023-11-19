@@ -10,7 +10,6 @@ public class QuestionRepositoryImpl implements QuestionRepository{
     private final QuestionMapper questionMapper;
     @Override
     public QuestionDTO find_question(QuestionDTO questionDTO) {
-
-        return questionMapper.find_qeustion(questionDTO);
+        return questionMapper.find_question(questionDTO);
     }
 }

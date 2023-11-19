@@ -7,5 +7,5 @@ import java.util.List;
 
 @Mapper
 public interface QuestionMapper {
-    QuestionDTO find_qeustion(QuestionDTO questionDTO);
+    QuestionDTO find_question(QuestionDTO questionDTO);
 }
