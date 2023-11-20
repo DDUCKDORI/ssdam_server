@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 @Setter
 @ToString
 public class QuestionDTO {
+    String result;
     String Invite_cd;
     int Mem_id;
     int Cate_id;
