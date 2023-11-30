@@ -17,4 +17,9 @@ public class CustomizeResponseEntityException {
         ExceptionResponse exceptionResponse = new ExceptionResponse("Fail",ex.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(TryAgainException.class)
+    public final ResponseEntity<Object> CanNotSaveAnswerException(Exception ex, WebRequest request){
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail",ex.getMessage());
+        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
+    }
 }
