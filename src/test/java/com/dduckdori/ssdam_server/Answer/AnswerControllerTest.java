@@ -13,6 +13,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
@@ -53,5 +54,24 @@ class AnswerControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
     }
+    @Test
+    @Transactional
+    @DisplayName("답변_저장_성공")
+    @WithMockUser
+    public void Save_Answer_Success() throws Exception{
+        AnswerDTO answerDTO = new AnswerDTO();
+        answerDTO.setCate_id(1);
+        answerDTO.setQust_id(2);
+        answerDTO.setMem_id(1);
+        answerDTO.setInvite_cd("BBBBB00000");
+        answerDTO.setAns_cn("Test입니다!");
 
+        this.mockMvc
+                .perform(post("/ssdam/answer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(answerDTO))
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 }
