@@ -57,4 +57,11 @@ class AnswerRepositoryImplTest {
         System.out.println("test_list = " + test_list);
         System.out.println("test_list.length = " + test_list.length);
     }
+    @Test
+    @DisplayName("특정_초대코드_미답변_수")
+    public void Find_InviteCd_Non_Ans_Num(){
+        String inviteCd="BBBBB00000";
+        int result = answerMapper.Find_Non_Ans_Num(inviteCd);
+        System.out.println("result = " + result);
+    }
 }
