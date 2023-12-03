@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,6 +69,26 @@ class AnswerControllerTest {
 
         this.mockMvc
                 .perform(post("/ssdam/answer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(answerDTO))
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @DisplayName("답변_수정_성공")
+    @WithMockUser
+    public void 답변_수정_성공() throws Exception{
+        AnswerDTO answerDTO = new AnswerDTO();
+        answerDTO.setCate_id(1);
+        answerDTO.setQust_id(2);
+        answerDTO.setMem_id(2);
+        answerDTO.setInvite_cd("BBBBB00000");
+        answerDTO.setAns_cn("Test입니다!");
+
+        this.mockMvc
+                .perform(patch("/ssdam/answer")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(answerDTO))
                 )
