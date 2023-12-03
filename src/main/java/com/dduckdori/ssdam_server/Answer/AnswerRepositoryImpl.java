@@ -28,4 +28,9 @@ public class AnswerRepositoryImpl implements AnswerRepository{
     public int InviteCd_Ans_yn(String inviteCd) {
         return answerMapper.Find_Non_Ans_Num(inviteCd);
     }
+
+    @Override
+    public int Update_Answer(AnswerDTO answerDTO) {
+        return answerMapper.Update_Answer(answerDTO);
+    }
 }

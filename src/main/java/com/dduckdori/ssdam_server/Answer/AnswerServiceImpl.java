@@ -16,7 +16,9 @@ public class AnswerServiceImpl implements AnswerService{
     }
 
     @Override
-    public int Save_Answer_Hist(AnswerDTO answerDTO) {return answerRepository.Save_Answer_Hist(answerDTO);}
+    public int Save_Answer_Hist(AnswerDTO answerDTO) {
+        return answerRepository.Save_Answer_Hist(answerDTO);
+    }
 
     @Override
     public AnswerDTO[] Find_Answer(String id) {
@@ -38,5 +40,11 @@ public class AnswerServiceImpl implements AnswerService{
     @Override
     public int InviteCd_Ans_YN(String inviteCd) {
         return answerRepository.InviteCd_Ans_yn(inviteCd);
+    }
+
+    @Override
+    public int Update_Answer(AnswerDTO answerDTO) {
+        answerDTO.setLast_updr(answerDTO.getInvite_cd()+"_"+answerDTO.getMem_id());
+        return answerRepository.Update_Answer(answerDTO);
     }
 }

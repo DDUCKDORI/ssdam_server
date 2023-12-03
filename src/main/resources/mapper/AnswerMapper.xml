@@ -36,4 +36,13 @@
         WHERE C.ANS_CN IS NULL
         AND A.INVITE_CD = #{inviteCd}
     </select>
+
+    <update id="Update_Answer" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO">
+        UPDATE SD_ANSWER
+        SET ANS_CN = #{Ans_cn}, LAST_UPDR = #{Last_updr} , ANS_DTM = now(), LAST_UPD_DTM = now()
+        WHERE CATE_ID = #{Cate_id}
+        AND QUST_ID = #{Qust_id}
+        AND MEM_ID = #{Mem_id}
+        AND INVITE_CD = #{Invite_cd}
+    </update>
 </mapper>

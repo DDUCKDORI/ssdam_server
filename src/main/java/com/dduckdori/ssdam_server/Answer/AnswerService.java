@@ -5,4 +5,5 @@ public interface AnswerService {
     int Save_Answer_Hist(AnswerDTO answerDTO);
     AnswerDTO[] Find_Answer(String id);
     int InviteCd_Ans_YN(String inviteCd);
+    int Update_Answer(AnswerDTO answerDTO);
 }
