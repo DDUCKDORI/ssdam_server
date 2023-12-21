@@ -27,6 +27,9 @@ out/
 !**/src/test/**/out/
 application.yml
 
+src/main/resources/static/.well-known/pki-validation/*.txt
+src/main/resources/*.p12
+src/main/resources/key
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
