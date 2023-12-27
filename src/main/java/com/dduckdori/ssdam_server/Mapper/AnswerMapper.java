@@ -2,6 +2,8 @@ package com.dduckdori.ssdam_server.Mapper;
 
 import com.dduckdori.ssdam_server.Answer.AnswerDTO;
 import org.apache.ibatis.annotations.Mapper;
+import org.springframework.context.annotation.Bean;
+
 
 @Mapper
 public interface AnswerMapper {

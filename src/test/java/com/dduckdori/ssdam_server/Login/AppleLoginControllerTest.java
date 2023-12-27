@@ -1,21 +1,13 @@
-package com.dduckdori.SsdamServer.Login;
+package com.dduckdori.ssdam_server.Login;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.JWSVerifier;
-import com.nimbusds.jose.crypto.RSASSAVerifier;
-import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.RSAKey;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 
 import java.io.IOException;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
-import java.util.Date;
+import java.util.Random;
 
 @SpringBootTest
 class AppleLoginControllerTest {
@@ -43,10 +35,22 @@ class AppleLoginControllerTest {
                 "eyJraWQiOiJZdXlYb1kiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbVNlcnZlciIsImV4cCI6MTcwMjkxNzQ3NSwiaWF0IjoxNzAyODMxMDc1LCJzdWIiOiIwMDE3NjYuMTg3OTVkNzE4NDU0NGM2ZWJjMWFhZGJhYTc4NWM4OGUuMTAzMiIsImNfaGFzaCI6ImVzd09vWjI5aVBtRG9TeXZXRUdlNVEiLCJlbWFpbCI6ImxkaGRldmVsb3BAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiYXV0aF90aW1lIjoxNzAyODMxMDc1LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.J5oOn5W1NOx599myF3AesuUlBg80mUedGNrUie1Xf6uSIdBNHoXWAylZd3P1eWmnfcGVPYCuvFVeT0ITrSKXLSE6KyAilza9UJOj2aL6EHU4WvDhL1no_HyjZiyXmFwnx8_Mkzc0gCV2k-0q5-COO161WCL690y5eyTYrudIBQO7_iRDRGuuxBaidJ49CTjCbRa68h6zyHvv26I0ziZ6tkim2Y-33vCRGuguh7NklmL4-nyMJlFcwsa4iBeizEUzIPGzYPHnMuMGHdBKWCdCal8hbZNp_kjQV4sCzN9FOQItISrAPigcnM3RjTXGT4u_gscPN0QE2mnFpVLbMhgILQ");
 
         try {
-            String l=loginService.authToken(appleDTO);
+            LoginDTO loginDTO=loginService.authToken(appleDTO);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    @Test
+    void  make_InviteCd() {
+        StringBuilder stringBuilder = new StringBuilder();
+        Random rd = new Random();
+        for(int i=0;i<4;i++){
+            stringBuilder.append((char)(rd.nextInt(26)+65));
+        }
+        for(int i=0;i<4;i++){
+            stringBuilder.append(rd.nextInt(10));
+        }
+        System.out.println("stringBuilder = " + stringBuilder);
     }
 }
 /*

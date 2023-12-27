@@ -1,4 +1,4 @@
-package com.dduckdori.SsdamServer.Login;
+package com.dduckdori.ssdam_server.Login;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

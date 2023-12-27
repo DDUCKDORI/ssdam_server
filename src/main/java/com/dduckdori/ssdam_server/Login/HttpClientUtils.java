@@ -1,4 +1,4 @@
-package com.dduckdori.SsdamServer.Login;
+package com.dduckdori.ssdam_server.Login;
 
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import org.apache.http.HttpEntity;

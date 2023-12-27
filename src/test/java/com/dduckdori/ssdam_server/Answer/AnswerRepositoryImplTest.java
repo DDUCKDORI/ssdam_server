@@ -12,12 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class AnswerRepositoryImplTest {
-
     private static AnswerMapper answerMapper;
     @Autowired
     public AnswerRepositoryImplTest(AnswerMapper answerMapper){
         this.answerMapper=answerMapper;
     }
+
     @Test
     @DisplayName("답변_저장_성공")
     @Transactional

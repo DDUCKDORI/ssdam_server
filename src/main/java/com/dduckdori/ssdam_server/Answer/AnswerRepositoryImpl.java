@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class AnswerRepositoryImpl implements AnswerRepository{
-    private final AnswerMapper answerMapper;
+
+    private AnswerMapper answerMapper;
 
     @Override
     public int Save_Answer(AnswerDTO answerDTO) {

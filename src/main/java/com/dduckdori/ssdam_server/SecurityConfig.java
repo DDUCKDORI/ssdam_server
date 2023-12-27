@@ -1,4 +1,4 @@
-package com.dduckdori.SsdamServer;
+package com.dduckdori.ssdam_server;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

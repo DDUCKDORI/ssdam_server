@@ -1,7 +1,7 @@
-package com.dduckdori.SsdamServer.Login;
+package com.dduckdori.ssdam_server.Login;
 
+import com.dduckdori.ssdam_server.Exception.TryAgainException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
@@ -30,10 +30,10 @@ import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 @RequiredArgsConstructor
@@ -49,8 +49,9 @@ public class AppleLoginService implements LoginService {
     private String APPLE_TEAM_ID;
     @Value("${apple.clientSecret}")
     private String APPLE_KEY_PATH;
-    //@Value("${apple.authURL}")
+
     private final static String APPLE_AUTH_URL="https://appleid.apple.com";
+    private final LoginRepository loginRepository;
 
     @Override
     public String getRedirectURL() {
@@ -61,10 +62,22 @@ public class AppleLoginService implements LoginService {
     }
 
     @Override
-    public String getToken(AppleDTO appleDTO) throws ParseException, JsonProcessingException, JOSEException {
+    public LoginDTO getToken(AppleDTO appleDTO) throws ParseException, JsonProcessingException, JOSEException {
 
         SignedJWT signedJWT = SignedJWT.parse(appleDTO.getId_token());
         JWTClaimsSet payload = signedJWT.getJWTClaimsSet();
+
+        //여기서 sub 값으로 데이터베이스에 해당 sub 값이 있는지 판단
+        appleDTO.setSub((String)payload.getClaims().get("sub"));
+//        LoginDTO loginDTO = loginRepository.find_sub(appleDTO);
+//        if(loginDTO!=null){
+//            //데이터베이스에 sub값이 있다면 널이아님.
+//            //refresh_token, 유저정보, sub 값을 loginDTO 담아 반환.
+//            //없다면
+//            //null이므로 다음 진행.
+//            return loginDTO;
+//        }
+
         String publicKeys = HttpClientUtils.doGet("https://appleid.apple.com/auth/keys");
         ObjectMapper objectMapper = new ObjectMapper();
         Keys keys = objectMapper.readValue(publicKeys,Keys.class);
@@ -78,26 +91,26 @@ public class AppleLoginService implements LoginService {
                 signature=true;
             }
         }
+
         //공개키를 통해 header와 payload 의 값이 같은지 비교
         if(signature == false){
-            System.out.println("signature = " + signature);
+            // TODO: 12/22/23
+            //실패처리 -> 예외처리
         }
         //Verify the JWS E256 signature using the server’s public key
         Date currentTime = new Date(System.currentTimeMillis());
         String aud = payload.getAudience().get(0);
         String iss = payload.getIssuer();
         String nonce = (String) payload.getClaim("nonce");
-        if(!currentTime.before(payload.getExpirationTime()) || !aud.equals(APPLE_TEAM_ID)
-                ||!iss.equals("https://appleid.apple.com")
-        ){
-            //실패처리
+        if(!currentTime.before(payload.getExpirationTime()) || !aud.equals(APPLE_TEAM_ID) ||!iss.equals("https://appleid.apple.com")){
+            // TODO: 12/22/23
+            //실패처리 -> 예외처리
         }
-
-        return "";
+        return null;
     }
 
     @Override
-    public String authToken(AppleDTO appleDTO) throws IOException, net.minidev.json.parser.ParseException, ParseException {
+    public LoginDTO authToken(AppleDTO appleDTO) throws IOException, net.minidev.json.parser.ParseException, ParseException {
 
         ClassPathResource resource = new ClassPathResource(APPLE_KEY_PATH);
         InputStream inputStream = resource.getInputStream();
@@ -105,8 +118,9 @@ public class AppleLoginService implements LoginService {
         JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
         PrivateKeyInfo object = (PrivateKeyInfo) pemParser.readObject();
         Date expirationDate = Date.from(LocalDateTime.now().plusDays(30).atZone(ZoneId.systemDefault()).toInstant());
+        //clientSecret 발급
         String clientSecret = Jwts.builder()
-                .setHeaderParam("kid","A43DNX9QCY")
+                .setHeaderParam("kid",APPLE_LOGIN_KEY)
                 .setHeaderParam("alg","ES256")
                 .setIssuer(APPLE_TEAM_ID)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -123,57 +137,57 @@ public class AppleLoginService implements LoginService {
         tokenRequest.put("grant_type", "authorization_code");
         tokenRequest.put("redirect_uri", "https://test-ssdam.site/ssdam/apple/login/callback");
 
-        //String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/token",tokenRequest);
-        String response = "{\"access_token\":\"a5c80edcde065487486de3deed1a0e515.0.rrxww.xcJJcEu5lh97LrEx_D-e1Q\",\"token_type\":\"Bearer\",\"expires_in\":3600,\"refresh_toke" +
-                "n\":\"r58a936c329ef490aa08ffcfea136f8e9.0.rrxww.UWi3In6ZEgwNx2ciiexAMQ\",\"id_token\":\"eyJraWQiOiJZdXlYb1kiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJod" +
-                "HRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbVNlcnZlciIsImV4cCI6MTcwMzE3MjczMCwiaWF0IjoxNzAzMDg2MzMwLCJzdWIiOiIwM" +
-                "DE3NjYuMTg3OTVkNzE4NDU0NGM2ZWJjMWFhZGJhYTc4NWM4OGUuMTAzMiIsImF0X2hhc2giOiI3V0Z5RmU0Q1lIYTdJaGI5ZWtxNzhnIiwiZW1haWwiOiJsZGhkZXZlbG9wQGdtY" +
-                "WlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImF1dGhfdGltZSI6MTcwMzA4NjMyNywibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.WbN-g62jFJLNws9tu_DvOqOu_HYufE" +
-                "huwioXPErbN1YmnhzmoCJG-twLU9ncs_A2NN6PVZ5cUuxlBnV_U0QTShH0FIXbpA3TY1hs0pmCkPHEPQP69ySzUEULl7PyFjJC4H2iWifeCqscuS1H3LTh5U0rvvtiwcOcsqQUtz" +
-                "Ug5vZuJKjKlhvr_1CdSr8Uzimjg8-xNS4Ruml16qpelxL9Q-kTFisTZfy0kjZbsR1cQlNX-XfRFH9Nlpl6EvFpmSL85QXby5fuvZ9SvS3DThiZtZX5A7NRR87vRVCAxWpEqWHq_3" +
-                "GA4N9UuicHUsaEUfhPp68e1JHm8iDm-YwpS6X8pg\"}";
+        String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/token",tokenRequest);
+
+        //String -> DTO
         JSONParser jsonParser = new JSONParser();
         Object obj = jsonParser.parse(response);
         JSONObject jsonObject = (JSONObject) obj;
-        ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setAcces_token((String) jsonObject.get("access_token"));
-        responseDTO.setToken_type((String) jsonObject.get("token_type"));
-        responseDTO.setExpires_in((Integer) jsonObject.get("expires_in"));
-        responseDTO.setRefresh_token((String) jsonObject.get("refresh_token"));
-        responseDTO.setId_token((String) jsonObject.get("id_token"));
-        System.out.println("responseDTO = " + responseDTO.getId_token());
+        LoginDTO loginDTO= new LoginDTO();
+        loginDTO.setAccess_token((String) jsonObject.get("access_token"));
+        loginDTO.setRefresh_token((String) jsonObject.get("refresh_token"));
+
+        //id_token으로 email 추출
         SignedJWT signedJWT = SignedJWT.parse((String) jsonObject.get("id_token"));
         JWTClaimsSet payload = signedJWT.getJWTClaimsSet();
-        System.out.println("payload = " + payload);//email 빼내고
-        //Base64.Decoder decoder = Base64.getDecoder();
-        //byte[] decodedBytes = decoder.decode(responseDTO.getId_token());
-        //System.out.println("new String(decodedBytes) = " + new String(decodedBytes));
-//        response.
-//        System.out.println(response);
-//        String[] arr_response = response.split(",");
-//        for(String arr : arr_response){
-//            System.out.println(arr);
-//        }
-//        ResponseDTO responseDTO= null;
-//        ObjectMapper mapper = new ObjectMapper();
-//        mapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER,true);
-//        mapper.writeValue(new File(response),responseDTO);
-//        System.out.println("responseDTO = " + responseDTO);
-//        //System.out.println("responseDTO = " + responseDTO);
-        return null;
+
+        loginDTO.setEmail((String) payload.getClaims().get("email"));
+        loginDTO.setMem_sub((String) payload.getClaims().get("sub"));
+
+        return loginDTO;
+    }
+
+    @Override
+    public ResponseDTO joinMember(LoginDTO loginDTO) {
+        //초대코드 여부 판별
+        if(loginDTO.getInvite_cd()==null){
+            //8자리 초대코드 만들기
+            loginDTO.setInvite_cd(make_InviteCd());
+        }
+        //초대코드 존재한다면 데이터베이스에 회원 정보 저장.
+        int result = loginRepository.join_member(loginDTO);
+        if(result != 1){
+            throw new TryAgainException("잠시 후 다시 시도해주시기 바랍니다.");
+        }
+        result = loginRepository.join_member_token(loginDTO);
+        if(result!=1){
+            throw new TryAgainException("잠시 후 다시 시도해주시기 바랍니다.");
+        }
+        ResponseDTO responseDTO = loginRepository.find_mem_info(loginDTO);
+        responseDTO.setAccess_token(loginDTO.getAccess_token());
+        responseDTO.setRefresh_token(loginDTO.getRefresh_token());
+        return responseDTO;
+    }
+
+    private String make_InviteCd() {
+        StringBuilder stringBuilder = new StringBuilder();
+        Random rd = new Random();
+        for(int i=0;i<4;i++){
+            stringBuilder.append((char)(rd.nextInt(26)+65));
+        }
+        for(int i=0;i<4;i++){
+            stringBuilder.append(rd.nextInt(10));
+        }
+        return stringBuilder.toString();
     }
 }
-/*
-response =
-{
-"access_token":"a4b5f7f93bac24b018935559439e140e6.0.rrxww.yKSo88EnFGLsC_2TDKQXwA",
-"token_type":"Bearer",
-"expires_in":3600,
-"refresh_token":"r4ccf873bead74fa28f73d9594fa19631.0.rrxww.eTGTQhFkUHcz1zUzgvhN-A",
-"id_token":"eyJraWQiOiJXNldjT0tCIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbVNlcnZlciIsImV4cCI6MTcwMzE3MTI5OCwiaWF0IjoxNzAzMDg0ODk4
-LCJzdWIiOiIwMDE3NjYuMTg3OTVkNzE4NDU0NGM2ZWJjMWFhZGJhYTc4NWM4OGUuMTAzMiIsImF0X2hhc2giOiJIV2dsdklUSFdJaHFmY3A2TkJKOHZBIiwiZW1haWwiOiJsZGhk
-ZXZlbG9wQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImF1dGhfdGltZSI6MTcwMzA4NDg5NSwibm9uY2Vfc3VwcG9ydGVkIjp0cnVlfQ.eT5DnHgIhmDeSKCzS
-ufBy51j-3kb0LmZMgl-avgsGrroPdixmeq8G3UZZFUVpN9EK7taTeSqOmjfpIz7BWJ3PcY7Q4j2-cMj3oeqIAhfEBAVAR3wy3e_UyuuAxldH6zeei_n5U4nl-gitH58tX3i9yAd5
-EQWT3JoO3GaZUsE7F6ZmEIsecQwVaTZErxmJV-b-E2ZANdg2DOwroXa0iUzJHc3_wQDDfqqwj04p7-z1uh0oAeixN42fRPKtZ8zY40X25eBE0kof92a7uQLVa4fhkBUfK-FwvwsK
-PeZ-Fc_P4A7g2akK024BvUMzZ494uws_2ipnzFl8J37iNSRo8lZ1w"}
- */
