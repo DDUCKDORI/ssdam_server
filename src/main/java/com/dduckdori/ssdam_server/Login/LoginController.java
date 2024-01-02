@@ -42,6 +42,7 @@ public class LoginController {
 
         LoginDTO loginDTO = loginService.getToken(appleDTO);
 
+
         //있다면 refresh_token이랑 사용자 정보반환
         if(loginDTO!=null){
             //DB에 sub값이 있다면
