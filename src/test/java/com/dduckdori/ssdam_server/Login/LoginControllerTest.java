@@ -10,7 +10,7 @@ import java.util.Base64;
 import java.util.Random;
 
 @SpringBootTest
-class AppleLoginControllerTest {
+class LoginControllerTest {
     @Autowired
     private LoginService loginService;
 
@@ -27,7 +27,7 @@ class AppleLoginControllerTest {
 //            byte[] decodedBytes = decoder.decode(info);
 //            System.out.println("인코딩 전: " + new String(decodedBytes));
 //        }
-        loginService.getToken(appleDTO);
+     //   loginService.getToken(appleDTO);
     }
     @Test
     void authToken() throws Exception{

@@ -11,4 +11,6 @@ public interface LoginMapper {
     int join_mem(LoginDTO loginDTO);
     int join_mem_token(LoginDTO loginDTO);
     ResponseDTO find_mem_info(LoginDTO loginDTO);
+
+    int get_mem_id(LoginDTO loginDTO);
 }

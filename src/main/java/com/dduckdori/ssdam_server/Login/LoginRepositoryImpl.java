@@ -29,4 +29,9 @@ public class LoginRepositoryImpl implements LoginRepository {
     public ResponseDTO find_mem_info(LoginDTO loginDTO) {
         return loginMapper.find_mem_info(loginDTO);
     }
+
+    @Override
+    public int get_mem_id(LoginDTO loginDTO) {
+        return loginMapper.get_mem_id(loginDTO);
+    }
 }

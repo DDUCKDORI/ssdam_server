@@ -1,9 +1,9 @@
 package com.dduckdori.ssdam_server.Login;
 
-import com.nimbusds.jose.shaded.gson.JsonObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -12,15 +12,18 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class HttpClientUtils {
+    private static Logger logger = LoggerFactory.getLogger(HttpClientUtils.class);
+    private static ObjectMapper objectMapper = new ObjectMapper();
     public static String doGet(String URL){
         String result = null;
         CloseableHttpClient httpClient = null;
@@ -36,13 +39,23 @@ public class HttpClientUtils {
             HttpEntity entity = response.getEntity();
             result = EntityUtils.toString(entity,"UTF-8");
             EntityUtils.consume(entity);
-
-        } catch (ClientProtocolException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            if(statusCode!=200){
+                logger.error(String.format("[doGet]http get url(%s) failed. status code:%s. reason:%s. result:%s", URL, statusCode, reasonPhrase, result));
+            }
+        }catch(Throwable t){
+            logger.error(String.format("[doGet]http get url(%s) failed. status code:%s. reason:%s.", URL, statusCode, reasonPhrase), t);
+        }finally {
+            try{
+                if(response!= null){
+                    response.close();
+                }
+                if(httpClient!=null){
+                    httpClient.close();
+                }
+            } catch (IOException e) {
+                logger.error(String.format("[doGet]release http get resource failed. url(%s). reason:%s.", URL, e.getMessage()));
+            }
         }
-
         return result;
     }
 
@@ -51,7 +64,7 @@ public class HttpClientUtils {
         CloseableHttpClient httpClient = null;
         CloseableHttpResponse httpResponse = null;
         Integer statusCode = null;
-        String reasonPharse = null;
+        String reasonPhrase = null;
         try{
             httpClient = HttpClients.createDefault();
             HttpPost httpPost = new HttpPost(url);
@@ -67,48 +80,34 @@ public class HttpClientUtils {
             httpPost.setEntity(formEntity);
             httpResponse = httpClient.execute(httpPost);
             statusCode = httpResponse.getStatusLine().getStatusCode();
-            reasonPharse = httpResponse.getStatusLine().getReasonPhrase();
+            reasonPhrase = httpResponse.getStatusLine().getReasonPhrase();
             HttpEntity entity = httpResponse.getEntity();
 
             result = EntityUtils.toString(entity,"UTF-8");
-
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        } catch (ClientProtocolException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            if (statusCode != 200) {
+                logger.error(String.format("[doPost]post url(%s) failed. status code:%s. reason:%s. param:%s. result:%s", url, statusCode, reasonPhrase, objectMapper.writeValueAsString(tokenRequest), result));
+            }
+            EntityUtils.consume(entity);
+        } catch (Throwable t) {
+            try {
+                logger.error(String.format("[doPost]post url(%s) failed. status code:%s. reason:%s. param:%s.", url, statusCode, reasonPhrase, objectMapper.writeValueAsString(tokenRequest)), t);
+            } catch (JsonProcessingException e) {
+            }
+        } finally {
+            try {
+                if (httpResponse != null) {
+                    httpResponse.close();
+                }
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (IOException e) {
+                try {
+                    logger.error(String.format("[doPost]release http post resource failed. url(%s). reason:%s, param:%s.", url, e.getMessage(), objectMapper.writeValueAsString(tokenRequest)));
+                } catch (JsonProcessingException ex) {
+                }
+            }
         }
         return result;
     }
 }
-/*
-result = {
-  "keys": [
-    {
-      "kty": "RSA",
-      "kid": "YuyXoY",
-      "use": "sig",
-      "alg": "RS256",
-      "n": "1JiU4l3YCeT4o0gVmxGTEK1IXR-Ghdg5Bzka12tzmtdCxU00ChH66aV-4HRBjF1t95IsaeHeDFRgmF0lJbTDTqa6_VZo2hc0zTiUAsGLacN6slePvDcR1IMucQGtPP5tGhIbU-HKabsKOFdD4VQ5PCXifjpN9R-1qOR571BxCAl4u1kUUIePAAJcBcqGRFSI_I1j_jbN3gflK_8ZNmgnPrXA0kZXzj1I7ZHgekGbZoxmDrzYm2zmja1MsE5A_JX7itBYnlR41LOtvLRCNtw7K3EFlbfB6hkPL-Swk5XNGbWZdTROmaTNzJhV-lWT0gGm6V1qWAK2qOZoIDa_3Ud0Gw",
-      "e": "AQAB"
-    },
-    {
-      "kty": "RSA",
-      "kid": "W6WcOKB",
-      "use": "sig",
-      "alg": "RS256",
-      "n": "2Zc5d0-zkZ5AKmtYTvxHc3vRc41YfbklflxG9SWsg5qXUxvfgpktGAcxXLFAd9Uglzow9ezvmTGce5d3DhAYKwHAEPT9hbaMDj7DfmEwuNO8UahfnBkBXsCoUaL3QITF5_DAPsZroTqs7tkQQZ7qPkQXCSu2aosgOJmaoKQgwcOdjD0D49ne2B_dkxBcNCcJT9pTSWJ8NfGycjWAQsvC8CGstH8oKwhC5raDcc2IGXMOQC7Qr75d6J5Q24CePHj_JD7zjbwYy9KNH8wyr829eO_G4OEUW50FAN6HKtvjhJIguMl_1BLZ93z2KJyxExiNTZBUBQbbgCNBfzTv7JrxMw",
-      "e": "AQAB"
-    },
-    {
-      "kty": "RSA",
-      "kid": "fh6Bs8C",
-      "use": "sig",
-      "alg": "RS256",
-      "n": "u704gotMSZc6CSSVNCZ1d0S9dZKwO2BVzfdTKYz8wSNm7R_KIufOQf3ru7Pph1FjW6gQ8zgvhnv4IebkGWsZJlodduTC7c0sRb5PZpEyM6PtO8FPHowaracJJsK1f6_rSLstLdWbSDXeSq7vBvDu3Q31RaoV_0YlEzQwPsbCvD45oVy5Vo5oBePUm4cqi6T3cZ-10gr9QJCVwvx7KiQsttp0kUkHM94PlxbG_HAWlEZjvAlxfEDc-_xZQwC6fVjfazs3j1b2DZWsGmBRdx1snO75nM7hpyRRQB4jVejW9TuZDtPtsNadXTr9I5NjxPdIYMORj9XKEh44Z73yfv0gtw",
-      "e": "AQAB"
-    }
-  ]
-}
- */
