@@ -33,10 +33,9 @@ public class LoginController {
     }
     @RequestMapping(value="/ssdam/apple/login/callback",method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<LoginDTO> appleCallBack(@RequestBody AppleDTO appleDTO) throws ParseException, IOException, JOSEException, UnAuthroizedAccessException, net.minidev.json.parser.ParseException {
+    public ResponseEntity<LoginDTO> appleCallBack(AppleDTO appleDTO) throws ParseException, IOException, JOSEException, UnAuthroizedAccessException, net.minidev.json.parser.ParseException {
         //code
         //id_token
-
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
         //여기서 sub 값으로 데이터베이스에 해당 sub 값이 있는지 판단
@@ -52,13 +51,12 @@ public class LoginController {
             String reIssueAccessToken = loginService.ReIssueAccessToken(loginDTO);
 
             loginDTO.setAccess_token(reIssueAccessToken);
-            loginDTO.setExists_yn("yes");
             // loginDTO 에 담아 반환.
             return new ResponseEntity<>(loginDTO,httpHeaders,HttpStatus.OK);
         }
         //없다면 프로세스 진행 -> sub랑 Refresh_token 저장 -> Okay
+
         loginDTO = loginService.authToken(appleDTO);
-        loginDTO.setExists_yn("no");
 
         return new ResponseEntity<>(loginDTO, httpHeaders, HttpStatus.OK);
     }

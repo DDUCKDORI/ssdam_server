@@ -49,8 +49,7 @@ public class AppleLoginService implements LoginService {
     private String APPLE_TEAM_ID;
     @Value("${apple.clientSecret}")
     private String APPLE_KEY_PATH;
-    @Value("${apple.audId}")
-    private String APPLE_AUD_ID;
+
     private final static String APPLE_AUTH_URL="https://appleid.apple.com";
     private final LoginRepository loginRepository;
     public AppleLoginService(LoginRepository loginRepository){
@@ -110,10 +109,9 @@ public class AppleLoginService implements LoginService {
         String iss = payload.getIssuer();
         String nonce = (String) payload.getClaim("nonce");
 
-        if(!currentTime.before(payload.getExpirationTime()) || !aud.equals(APPLE_AUD_ID) ||!iss.equals("https://appleid.apple.com")){
+        if(!currentTime.before(payload.getExpirationTime()) || !aud.equals(APPLE_CLIENT_ID) ||!iss.equals("https://appleid.apple.com")){
             throw new UnAuthroizedAccessException("적절하지 않은 접근입니다.");
         }
-
         return null;
     }
 
@@ -173,6 +171,7 @@ public class AppleLoginService implements LoginService {
     @Override
     public String ReIssueAccessToken(LoginDTO loginDTO) throws IOException, net.minidev.json.parser.ParseException {
         Map<String, String> tokenRequest = getTokenRequest(loginDTO.getRefresh_token(), getClientSecret(),"refresh_token");
+        System.out.println("tokenRequest = " + tokenRequest);
 
         String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/token",tokenRequest);
 
@@ -196,7 +195,7 @@ public class AppleLoginService implements LoginService {
     }
     private Map<String, String> getTokenRequest(String s, String clientSecret, String type) {
         Map<String,String> tokenRequest = new HashMap<>();
-        tokenRequest.put("client_id", APPLE_AUD_ID); //그대로
+        tokenRequest.put("client_id", APPLE_CLIENT_ID); //그대로
         tokenRequest.put("client_secret", clientSecret); //그대로
         if(type.equals("refresh_token")){
             tokenRequest.put("refresh_token",s);
@@ -211,7 +210,6 @@ public class AppleLoginService implements LoginService {
 
     private String getClientSecret() throws IOException {
         ClassPathResource resource = new ClassPathResource(APPLE_KEY_PATH);
-
         InputStream inputStream = resource.getInputStream();
         PEMParser pemParser = new PEMParser(new StringReader(IOUtils.toString(inputStream, StandardCharsets.UTF_8)));
         JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
@@ -225,7 +223,7 @@ public class AppleLoginService implements LoginService {
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(expirationDate)
                 .setAudience("https://appleid.apple.com")
-                .setSubject(APPLE_AUD_ID)
+                .setSubject(APPLE_CLIENT_ID)
                 .signWith(SignatureAlgorithm.ES256,converter.getPrivateKey(object))
                 .compact();
         return clientSecret;
