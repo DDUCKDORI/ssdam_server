@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dduckdori.ssdam_server.Mapper.LoginMapper">
+
+    <select id="find_sub" resultType="com.dduckdori.ssdam_server.Login.LoginDTO" parameterType="com.dduckdori.ssdam_server.Login.AppleDTO">
+        SELECT A.MEM_SUB,A.MEM_ID,A.INVITE_CD,B.EMAIL,B.FM_DVCD,B.NICK_NM,A.REFRESH_TOKEN
+        FROM SD_MEMBER_TOKEN A
+        LEFT JOIN SD_MEMBER B
+        ON A.MEM_ID=B.MEM_ID AND A.INVITE_CD=B.INVITE_CD
+        WHERE A.MEM_SUB = #{sub}
+    </select>
+    <insert id="join_mem" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
+        INSERT INTO SD_MEMBER (MEM_ID,INVITE_CD,EMAIL,FM_DVCD,NICK_NM,FST_INPR,LAST_UPDR)
+        VALUES(#{mem_id},#{invite_cd},#{email},#{fm_dvcd},#{nick_nm},'ssdam_Team','ssdam_Team')
+    </insert>
+    <insert id="join_mem_token" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
+        INSERT INTO SD_MEMBER_TOKEN (MEM_SUB,MEM_ID,INVITE_CD,REFRESH_TOKEN,FST_INPR,LAST_UPDR)
+        VALUES(#{mem_sub},#{mem_id},#{invite_cd},#{refresh_token},'ssdam_Team','ssdam_Team')
+    </insert>
+    <select id="find_mem_info" resultType="com.dduckdori.ssdam_server.Login.ResponseDTO" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
+        SELECT A.MEM_ID,A.INVITE_CD,B.FM_DVCD,B.NICK_NM
+        FROM SD_MEMBER_TOKEN A
+        LEFT JOIN SD_MEMBER B
+        ON A.MEM_ID=B.MEM_ID AND A.INVITE_CD=B.INVITE_CD
+        WHERE A.MEM_SUB = #{mem_sub}
+    </select>
+    <select id="get_mem_id" resultType="int" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
+        SELECT MAX(A.MEM_ID)
+        FROM SD_MEMBER A
+        WHERE A.INVITE_CD = #{invite_cd}
+    </select>
+</mapper>

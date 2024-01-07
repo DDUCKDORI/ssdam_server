@@ -1,5 +1,9 @@
 package com.dduckdori.ssdam_server.Answer;
 
+import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
+import com.dduckdori.ssdam_server.Login.AppleDTO;
+import com.dduckdori.ssdam_server.Login.LoginController;
+import com.dduckdori.ssdam_server.Login.LoginService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,12 +34,30 @@ class AnswerControllerTest {
     MockMvc mockMvc;
     @Autowired
     private WebApplicationContext wac;
+    @Autowired
+    private LoginController loginController;
     private ObjectMapper objectMapper = new ObjectMapper();
     @BeforeEach
     public void setup(){
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .build();
+    }
+    @Test
+    @WithMockUser
+    public void appleCallBack() throws Exception, UnAuthroizedAccessException {
+
+        AppleDTO appleDTO = new AppleDTO();
+        appleDTO.setCode("c1242acd89dd74547a46ed56a17ceb7f4.0.ryzw.KUaZWBEDUPN96yKoiY5qkQ");
+        appleDTO.setId_token("eyJraWQiOiJmaDZCczhDIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbSIsImV4cCI6MTcwNDQ2NTk0MCwiaWF0IjoxNzA0Mzc5NTQwLCJzdWIiOiIwMDA4OTYuODRmYWIwMjk0ZDY5NDI5ZWFjN2YwZTFlMjNlNTMyOGYuMDkxNiIsImNfaGFzaCI6IjNXd3RweloyT3h6TFUyT3lQVVFwWVEiLCJhdXRoX3RpbWUiOjE3MDQzNzk1NDAsIm5vbmNlX3N1cHBvcnRlZCI6dHJ1ZX0.NZXEzSI9iKd89g-ZtKTpjQpyU8oNANASHHAy_8Y0w3oAfy8n1pbTXegKOw0bsad6CoSwsM94VS7lZBR20vcaDoiusTxVl0jiX8USpC1g-hKtK5EY73hWPqTyadIAI7K_0g91Dy2upL-Q1MwDrnU9NxMWXKyV3d2MGmRXQ3pG72Z0k-4VVQTPHHxd_ai6YIyt_-YWN0XEtCp8Cc9k55PZZ_G12hl5YkH2zByOVuq9U_eHKKLwtgv5scPeBw8KuZq7v-KlMIFwYE71eevdUK_3ZWb4S1F6ik0QUyvNDrjKsEbeVR-yMRJagAIKzHplYWlXyCQNWkWF7aWQH_PRbdIF7g");
+        loginController.appleCallBack(appleDTO);
+        this.mockMvc
+                .perform(post("/ssdam/apple/login/callback")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(appleDTO))
+                )
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
     }
     @Test
     @DisplayName("답변_저장_실패")

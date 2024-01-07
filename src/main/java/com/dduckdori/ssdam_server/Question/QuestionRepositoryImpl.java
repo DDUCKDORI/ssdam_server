@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class QuestionRepositoryImpl implements QuestionRepository{
-    private final QuestionMapper questionMapper;
+    private QuestionMapper questionMapper;
     @Override
     public QuestionDTO find_question(QuestionDTO questionDTO) {
         return questionMapper.find_question(questionDTO);

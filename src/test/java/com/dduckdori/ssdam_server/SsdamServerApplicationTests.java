@@ -8,6 +8,7 @@ class SsdamServerApplicationTests {
 
     @Test
     void contextLoads() {
+
     }
 
 }
