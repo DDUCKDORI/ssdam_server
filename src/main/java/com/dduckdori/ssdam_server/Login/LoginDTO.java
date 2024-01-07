@@ -6,7 +6,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoginDTO {
-    private String exists_yn;
     private String access_token;
     private String refresh_token;
     private String invite_cd;

@@ -40,8 +40,8 @@ public class CustomizeResponseEntityException {
     }
 
     @ExceptionHandler({UnAuthroizedAccessException.class ,ParseException.class, JsonProcessingException.class, JOSEException.class, net.minidev.json.parser.ParseException.class})
-    public final ResponseEntity<Object> GeneralException(Exception ex){
-        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail", ex.getMessage());
+    public final ResponseEntity<Object> GeneralException(){
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail","로그인에 실패하였습니다. 잠시 후 다시 시도해 주세요.");
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }
