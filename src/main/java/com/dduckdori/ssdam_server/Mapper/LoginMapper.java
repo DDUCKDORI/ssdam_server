@@ -2,7 +2,7 @@ package com.dduckdori.ssdam_server.Mapper;
 
 import com.dduckdori.ssdam_server.Login.AppleDTO;
 import com.dduckdori.ssdam_server.Login.LoginDTO;
-import com.dduckdori.ssdam_server.Login.ResponseDTO;
+import com.dduckdori.ssdam_server.Response.ResponseDTO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

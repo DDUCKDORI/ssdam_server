@@ -1,6 +1,7 @@
 package com.dduckdori.ssdam_server.Login;
 
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
+import com.dduckdori.ssdam_server.Response.ResponseDTO;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

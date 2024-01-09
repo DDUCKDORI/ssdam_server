@@ -18,7 +18,7 @@
         INSERT INTO SD_MEMBER_TOKEN (MEM_SUB,MEM_ID,INVITE_CD,REFRESH_TOKEN,FST_INPR,LAST_UPDR)
         VALUES(#{mem_sub},#{mem_id},#{invite_cd},#{refresh_token},'ssdam_Team','ssdam_Team')
     </insert>
-    <select id="find_mem_info" resultType="com.dduckdori.ssdam_server.Login.ResponseDTO" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
+    <select id="find_mem_info" resultType="com.dduckdori.ssdam_server.Response.ResponseDTO" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
         SELECT A.MEM_ID,A.INVITE_CD,B.FM_DVCD,B.NICK_NM
         FROM SD_MEMBER_TOKEN A
         LEFT JOIN SD_MEMBER B

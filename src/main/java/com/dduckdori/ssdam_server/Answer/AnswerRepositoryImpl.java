@@ -5,10 +5,13 @@ import com.dduckdori.ssdam_server.Mapper.AnswerMapper;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
+
 public class AnswerRepositoryImpl implements AnswerRepository{
 
     private AnswerMapper answerMapper;
+    public AnswerRepositoryImpl(AnswerMapper answerMapper){
+        this.answerMapper = answerMapper;
+    }
 
     @Override
     public int Save_Answer(AnswerDTO answerDTO) {

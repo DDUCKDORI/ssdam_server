@@ -8,4 +8,6 @@ import java.util.List;
 @Mapper
 public interface QuestionMapper {
     QuestionDTO find_question(QuestionDTO questionDTO);
+
+    int familyNum(String inviteCd);
 }

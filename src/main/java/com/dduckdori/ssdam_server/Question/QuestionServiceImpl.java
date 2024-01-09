@@ -12,4 +12,9 @@ public class QuestionServiceImpl implements QuestionService{
     public QuestionDTO find_question(QuestionDTO questionDTO) {
         return questionRepository.find_question(questionDTO);
     }
+
+    @Override
+    public int FamilyNum(String inviteCd) {
+        return questionRepository.FamilyNum(inviteCd);
+    }
 }

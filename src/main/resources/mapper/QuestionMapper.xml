@@ -2,7 +2,6 @@
 
 <!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dduckdori.ssdam_server.Mapper.QuestionMapper">
-
     <select id="find_question" resultType="com.dduckdori.ssdam_server.Question.QuestionDTO" parameterType="com.dduckdori.ssdam_server.Question.QuestionDTO">
         SELECT A.MEM_ID,A.INVITE_CD, B.QUST_ID,B.CATE_ID,D.QUST_CN, C.ANS_CN,C.ANS_DTM,
                CASE
@@ -26,6 +25,7 @@
           AND A.INVITE_CD=#{Invite_cd}
         ORDER BY B.FST_INPUT_DTM DESC
     </select>
-
-
+    <select id="familyNum" resultType="int" parameterType="String">
+        SELECT COUNT(*) AS FAMILY_NUM FROM SD_MEMBER WHERE INVITE_CD = #{Invite_cd}
+    </select>
 </mapper>

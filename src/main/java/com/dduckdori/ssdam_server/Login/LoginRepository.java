@@ -1,5 +1,7 @@
 package com.dduckdori.ssdam_server.Login;
 
+import com.dduckdori.ssdam_server.Response.ResponseDTO;
+
 public interface LoginRepository {
      LoginDTO find_sub(AppleDTO appleDTO);
      int join_member(LoginDTO loginDTO);
