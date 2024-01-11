@@ -1,6 +1,7 @@
 package com.dduckdori.ssdam_server.Question;
 
 import com.dduckdori.ssdam_server.Exception.NotFoundUserException;
+import com.dduckdori.ssdam_server.Response.DateResponse;
 import com.dduckdori.ssdam_server.Response.EtcResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,5 +50,14 @@ public class QuestionController {
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
 
         return new ResponseEntity<>(etcResponse,httpHeaders,HttpStatus.OK);
+    }
+    @GetMapping("/ssdam/question/{date}/{invite_cd}")
+    public ResponseEntity<Object> search_question_date(@PathVariable String date, @PathVariable String invite_cd){
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
+
+        DateResponse dateResponse = questionService.find_question_date(date,invite_cd);
+        return new ResponseEntity<>(dateResponse,httpHeaders,HttpStatus.OK);
     }
 }
