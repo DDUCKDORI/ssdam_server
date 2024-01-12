@@ -26,7 +26,7 @@
         WHERE A.MEM_SUB = #{mem_sub}
     </select>
     <select id="get_mem_id" resultType="int" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
-        SELECT MAX(A.MEM_ID)
+        SELECT IFNULL(MAX(A.MEM_ID),0)
         FROM SD_MEMBER A
         WHERE A.INVITE_CD = #{invite_cd}
     </select>

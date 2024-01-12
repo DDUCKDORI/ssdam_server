@@ -34,6 +34,7 @@ public class QuestionServiceImpl implements QuestionService{
         }
         dateResponse.setInvite_cd(inviteCd);
         AnswerList[] answerLists = questionRepository.find_answer_date(dateResponse);
+        dateResponse.setResult("Success");
         dateResponse.setAns_list(answerLists);
         return dateResponse;
     }

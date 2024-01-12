@@ -34,7 +34,7 @@ public class LoginController {
     }
     @RequestMapping(value="/ssdam/apple/login/callback",method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<LoginDTO> appleCallBack(AppleDTO appleDTO) throws ParseException, IOException, JOSEException, UnAuthroizedAccessException, net.minidev.json.parser.ParseException {
+    public ResponseEntity<LoginDTO> appleCallBack(@RequestBody AppleDTO appleDTO) throws ParseException, IOException, JOSEException, UnAuthroizedAccessException, net.minidev.json.parser.ParseException {
         //code
         //id_token
         HttpHeaders httpHeaders = new HttpHeaders();

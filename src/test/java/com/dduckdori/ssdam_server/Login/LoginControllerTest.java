@@ -1,5 +1,6 @@
 package com.dduckdori.ssdam_server.Login;
 
+import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,28 +12,23 @@ import java.util.Random;
 
 @SpringBootTest
 class LoginControllerTest {
-    @Autowired
+
     private LoginService loginService;
+    @Autowired
+    public LoginControllerTest(LoginService loginService){
+        this.loginService=loginService;
+    }
 
     @Test
-    void getToekn() throws Exception{
-        AppleDTO appleDTO = new AppleDTO("ca670400dba8440f8b283117189433414.0.rrxww.KlwNiDA7eyXzIYAPrBIj3Q",
-                "eyJraWQiOiJZdXlYb1kiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbVNlcnZlciIsImV4cCI6MTcwMjkxNzQ3NSwiaWF0IjoxNzAyODMxMDc1LCJzdWIiOiIwMDE3NjYuMTg3OTVkNzE4NDU0NGM2ZWJjMWFhZGJhYTc4NWM4OGUuMTAzMiIsImNfaGFzaCI6ImVzd09vWjI5aVBtRG9TeXZXRUdlNVEiLCJlbWFpbCI6ImxkaGRldmVsb3BAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiYXV0aF90aW1lIjoxNzAyODMxMDc1LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.J5oOn5W1NOx599myF3AesuUlBg80mUedGNrUie1Xf6uSIdBNHoXWAylZd3P1eWmnfcGVPYCuvFVeT0ITrSKXLSE6KyAilza9UJOj2aL6EHU4WvDhL1no_HyjZiyXmFwnx8_Mkzc0gCV2k-0q5-COO161WCL690y5eyTYrudIBQO7_iRDRGuuxBaidJ49CTjCbRa68h6zyHvv26I0ziZ6tkim2Y-33vCRGuguh7NklmL4-nyMJlFcwsa4iBeizEUzIPGzYPHnMuMGHdBKWCdCal8hbZNp_kjQV4sCzN9FOQItISrAPigcnM3RjTXGT4u_gscPN0QE2mnFpVLbMhgILQ");
-        //code: authorization code
-        //id_token : 애플에서 보낸 jwt
-        //System.out.println("source = " + source);
-        String[] jwt = appleDTO.getId_token().split("[.]");
-        Base64.Decoder decoder= Base64.getDecoder();
-//        for(String info:jwt){
-//            byte[] decodedBytes = decoder.decode(info);
-//            System.out.println("인코딩 전: " + new String(decodedBytes));
-//        }
-     //   loginService.getToken(appleDTO);
+    void getToken() throws Exception, UnAuthroizedAccessException {
+        AppleDTO appleDTO = new AppleDTO("c525dcf65587b40a58dfcd4776859d08b.0.ryzw.GzGSF-pEUnbs8rmF0TOLsA",
+                "eyJraWQiOiJXNldjT0tCIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbSIsImV4cCI6MTcwNTE0NTA0NCwiaWF0IjoxNzA1MDU4NjQ0LCJzdWIiOiIwMDA4OTYuODRmYWIwMjk0ZDY5NDI5ZWFjN2YwZTFlMjNlNTMyOGYuMDkxNiIsImNfaGFzaCI6Im9HQ3o3T0RfNGpoY3BZUmQ5Ry1DUnciLCJhdXRoX3RpbWUiOjE3MDUwNTg2NDQsIm5vbmNlX3N1cHBvcnRlZCI6dHJ1ZX0.laK5OshGat0u_IrEla2HgzOQimMCS847Lwehq18PXocACG7gVVTBbH_6Vf-eV62AbyRnj_Ln6OoNxRpc89_UdcX8zY-U8RehTKbHzmw_ff11O9RaGszaLU3xt_Ckdfd5MCESOGKOVdgLYSPheLhwgWZB4UBfnfqMk2xi93AhLK2I-L6Wym-dv9Gl19NEAzp4WzDBMH0DkCLN0u_F4EHVsPJ6NIztZj5JrwM8pRuOp6cLBvdbIUV6jDkmyo648iF3Xm5OiXqP46dVq6MjgNPw-M8XjBEXes89O7xeZYbvBT8PSb_WsrV0LKNaJ3bbODyHdKPnRSRj9X16A2IWQGLhhg");
+        loginService.getToken(appleDTO);
     }
     @Test
     void authToken() throws Exception{
-        AppleDTO appleDTO = new AppleDTO("ca670400dba8440f8b283117189433414.0.rrxww.KlwNiDA7eyXzIYAPrBIj3Q",
-                "eyJraWQiOiJZdXlYb1kiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbVNlcnZlciIsImV4cCI6MTcwMjkxNzQ3NSwiaWF0IjoxNzAyODMxMDc1LCJzdWIiOiIwMDE3NjYuMTg3OTVkNzE4NDU0NGM2ZWJjMWFhZGJhYTc4NWM4OGUuMTAzMiIsImNfaGFzaCI6ImVzd09vWjI5aVBtRG9TeXZXRUdlNVEiLCJlbWFpbCI6ImxkaGRldmVsb3BAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiYXV0aF90aW1lIjoxNzAyODMxMDc1LCJub25jZV9zdXBwb3J0ZWQiOnRydWV9.J5oOn5W1NOx599myF3AesuUlBg80mUedGNrUie1Xf6uSIdBNHoXWAylZd3P1eWmnfcGVPYCuvFVeT0ITrSKXLSE6KyAilza9UJOj2aL6EHU4WvDhL1no_HyjZiyXmFwnx8_Mkzc0gCV2k-0q5-COO161WCL690y5eyTYrudIBQO7_iRDRGuuxBaidJ49CTjCbRa68h6zyHvv26I0ziZ6tkim2Y-33vCRGuguh7NklmL4-nyMJlFcwsa4iBeizEUzIPGzYPHnMuMGHdBKWCdCal8hbZNp_kjQV4sCzN9FOQItISrAPigcnM3RjTXGT4u_gscPN0QE2mnFpVLbMhgILQ");
+        AppleDTO appleDTO = new AppleDTO("c04132f144631446d869a00f26f05e8ab.0.ryzw.QUa1vWrzndEO3cwIqsjTOw",
+                "eyJraWQiOiJsVkhkT3g4bHRSIiwiYWxnIjoiUlMyNTYifQ.eyJpc3MiOiJodHRwczovL2FwcGxlaWQuYXBwbGUuY29tIiwiYXVkIjoiY29tLmRkdWNrZG9yaS5Tc2RhbSIsImV4cCI6MTcwNTE0ODM3MCwiaWF0IjoxNzA1MDYxOTcwLCJzdWIiOiIwMDA4OTYuODRmYWIwMjk0ZDY5NDI5ZWFjN2YwZTFlMjNlNTMyOGYuMDkxNiIsImNfaGFzaCI6ImtpdnpsZTdoa3hZTktacXcxVUIyT2ciLCJhdXRoX3RpbWUiOjE3MDUwNjE5NzAsIm5vbmNlX3N1cHBvcnRlZCI6dHJ1ZX0.jW_UUyWeX3d3FhRL_dsmGsZY132yF5wQr2zxuNqSErnKi3oiD4nfvf-r1m3RY0qHzuGOSoIjRTUF669ziwWXV4tM-YdzwokjxVH1JgQm2X9fhEY2Af6vf15mGyFxwWjInl1dv4O-8SKvI_kDAqlkuFwKfUYNY5V5rS2-kWvsArdIAP6fBdtN9wXZpEOTMhntYekAYDLESQnbUBBkleLtMEmD1ppYfLlHqy-Zb9ERgBc62nZ_3O1bb6Kb0iSe29Nka-18dv4Kun1jia6dZG66EkmZpzfqjzKBIya5PUMt6GKNm0n6Le9rVKeHHf_bYNCbG3PHKUSGLjG3f_stQXqGeg");
 
         try {
             LoginDTO loginDTO=loginService.authToken(appleDTO);
@@ -53,24 +49,3 @@ class LoginControllerTest {
         System.out.println("stringBuilder = " + stringBuilder);
     }
 }
-/*
-인코딩 전: {
-"kid":"YuyXoY",
-"alg":"RS256"
-}
-인코딩 전: {
-"iss":"https://appleid.apple.com",
-"aud":"com.dduckdori.SsdamServer",
-"exp":1702917475,
-"iat":1702831075,
-"sub":"001766.18795d7184544c6ebc1aadbaa785c88e.1032",
-"c_hash":"eswOoZ29iPmDoSyvWEGe5Q",
-"email":"ldhdevelop@gmail.com",
-"email_verified":"true",
-"auth_time":1702831075,
-"nonce_supported":true
-}
-
- */
-// 암호화 되어있는 signature 증명 -> 공개키를 통해 signature를 복호화하여 header값과 payload값과 같은지 비교
-// 공개키 받아와야 함,

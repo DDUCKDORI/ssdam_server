@@ -25,4 +25,11 @@ class LoginRepositoryImplTest {
         LoginDTO loginDTO = loginMapper.find_sub(appleDTO);
         Assertions.assertThat(loginDTO).isNull();
     }
+    @Test
+    public void get_mem_id(){
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setInvite_cd("A");
+        int result = loginMapper.get_mem_id(loginDTO);
+        System.out.println("result = " + result);
+    }
 }
