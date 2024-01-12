@@ -52,13 +52,14 @@ public class LoginController {
             String reIssueAccessToken = loginService.ReIssueAccessToken(loginDTO);
 
             loginDTO.setAccess_token(reIssueAccessToken);
+            loginDTO.setExists_yn("yes");
             // loginDTO 에 담아 반환.
             return new ResponseEntity<>(loginDTO,httpHeaders,HttpStatus.OK);
         }
         //없다면 프로세스 진행 -> sub랑 Refresh_token 저장 -> Okay
 
         loginDTO = loginService.authToken(appleDTO);
-
+        loginDTO.setExists_yn("no");
         return new ResponseEntity<>(loginDTO, httpHeaders, HttpStatus.OK);
     }
     //refresh_token 저장과 회원 정보는 이후 API 에서 진행

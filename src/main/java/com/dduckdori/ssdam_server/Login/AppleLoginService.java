@@ -148,7 +148,7 @@ public class AppleLoginService implements LoginService {
     @Transactional
     public ResponseDTO joinMember(LoginDTO loginDTO) {
         //초대코드 여부 판별
-        if(loginDTO.getInvite_cd()==null){
+        if(loginDTO.getInvite_cd()==null || loginDTO.getInvite_cd()==""){
             //8자리 초대코드 만들기
             loginDTO.setInvite_cd(make_InviteCd());
             loginDTO.setMem_id(1);
