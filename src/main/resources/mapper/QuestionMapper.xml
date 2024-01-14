@@ -24,6 +24,7 @@
         WHERE A.MEM_ID=#{Mem_id}
           AND A.INVITE_CD=#{Invite_cd}
         ORDER BY B.FST_INPUT_DTM DESC
+        LIMIT 1
     </select>
     <select id="familyNum" resultType="int" parameterType="String">
         SELECT COUNT(*) AS FAMILY_NUM FROM SD_MEMBER WHERE INVITE_CD = #{Invite_cd}
