@@ -18,8 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +35,30 @@ class AnswerControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .build();
+    }
+    @Test
+    @DisplayName("해당 질문의 내 답변 조회 실패")
+    @WithMockUser
+    public void Get_Ssdam_Answer_Fail() throws Exception{
+        String id = "1_3_PBAD3758";
+        this.mockMvc
+                .perform(get("/ssdam/answer/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+    }
+    @Test
+    @DisplayName("해당 질문의 내 답변 조회, 멤버 아이디 없음")
+    @WithMockUser
+    public void Get_Ssdam_Answer_No_MemId() throws Exception{
+        String id = "1_3_PBAD3758";
+        this.mockMvc
+                .perform(get("/ssdam/answer/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
     }
     @Test
     @DisplayName("답변_저장_실패")

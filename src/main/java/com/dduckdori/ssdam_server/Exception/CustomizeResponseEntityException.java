@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 
 import java.nio.charset.Charset;
 import java.text.ParseException;
@@ -20,7 +19,7 @@ import java.text.ParseException;
 public class CustomizeResponseEntityException {
     HttpHeaders httpHeaders = new HttpHeaders();
 
-    @ExceptionHandler(NotFoundUserException.class)
+    @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity<Object> CanNotFoundUserException(Exception ex){
         ExceptionResponse exceptionResponse = new ExceptionResponse("Fail",ex.getMessage());
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
@@ -40,8 +39,8 @@ public class CustomizeResponseEntityException {
     }
 
     @ExceptionHandler({UnAuthroizedAccessException.class ,ParseException.class, JsonProcessingException.class, JOSEException.class, net.minidev.json.parser.ParseException.class})
-    public final ResponseEntity<Object> GeneralException(){
-        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail","로그인에 실패하였습니다. 잠시 후 다시 시도해 주세요.");
+    public final ResponseEntity<Object> GeneralException(Exception ex){
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail", ex.getMessage());
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }

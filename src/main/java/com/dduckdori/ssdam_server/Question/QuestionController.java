@@ -1,6 +1,6 @@
 package com.dduckdori.ssdam_server.Question;
 
-import com.dduckdori.ssdam_server.Exception.NotFoundUserException;
+import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import com.dduckdori.ssdam_server.Response.DateResponse;
 import com.dduckdori.ssdam_server.Response.EtcResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 
-import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class QuestionController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         if(questionDTO==null){
-            throw new NotFoundUserException("해당 사용자를 찾을 수 없습니다..");
+            throw new NotFoundException("해당 사용자를 찾을 수 없습니다..");
         }
         questionDTO.setResult("Success");
 
@@ -41,7 +39,7 @@ public class QuestionController {
     public ResponseEntity<Object> find_FamilyNum(@PathVariable String invite_cd){
         int fam_num = questionService.FamilyNum(invite_cd);
         if(fam_num<0){
-            throw new NotFoundUserException("해당하는 초대코드가 없어요..");
+            throw new NotFoundException("해당하는 초대코드가 없어요..");
         }
         EtcResponse etcResponse = new EtcResponse();
         etcResponse.setResult("success");

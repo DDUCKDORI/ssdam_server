@@ -1,5 +1,6 @@
 package com.dduckdori.ssdam_server.Answer;
 
+import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import com.dduckdori.ssdam_server.Exception.TryAgainException;
 import com.dduckdori.ssdam_server.Response.AnswerResponse;
 import jakarta.validation.Valid;
@@ -50,13 +51,15 @@ public class AnswerController {
             throw new TryAgainException("잘못된 요청입니다.");
         }
         AnswerDTO[] answer_list = answerService.Find_Answer(id);
-
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
-        if (answer_list != null) {
+        if (answer_list.length != 0) {
             for( AnswerDTO answerDTO : answer_list){
                 answerDTO.setResult("Success");
             }
+        }
+        else{
+            throw new NotFoundException("해당 질문이 없어요..");
         }
         return new ResponseEntity<>(answer_list,httpHeaders, HttpStatus.OK);
     }

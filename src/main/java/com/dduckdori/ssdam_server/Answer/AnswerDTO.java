@@ -15,8 +15,10 @@ public class AnswerDTO {
 
     @NotNull
     private int Cate_id;
+    private String Cate_nm;
     @NotNull
     private int Qust_id;
+    private String Qust_cn;
     @NotNull
     private int Mem_id;
     @NotNull
