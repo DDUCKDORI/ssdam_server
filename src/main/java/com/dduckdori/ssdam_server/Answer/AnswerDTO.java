@@ -30,5 +30,7 @@ public class AnswerDTO {
     private Timestamp Ans_dtm;
     private String Fst_inpr;
     private String Last_updr;
+    private String Fm_dvcd;
+    private String Nick_nm;
 
 }

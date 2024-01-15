@@ -52,7 +52,7 @@ class AnswerControllerTest {
     @DisplayName("해당 질문의 내 답변 조회, 멤버 아이디 없음")
     @WithMockUser
     public void Get_Ssdam_Answer_No_MemId() throws Exception{
-        String id = "1_3_PBAD3758";
+        String id = "1_7_PBAD3758";
         this.mockMvc
                 .perform(get("/ssdam/answer/"+id)
                         .contentType(MediaType.APPLICATION_JSON)
