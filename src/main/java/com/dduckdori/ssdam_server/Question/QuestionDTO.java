@@ -14,6 +14,7 @@ public class QuestionDTO {
     String Invite_cd;
     int Mem_id;
     int Cate_id;
+    String Cate_nm;
     int Qust_id;
     String Qust_cn;
     String Ans_cn;

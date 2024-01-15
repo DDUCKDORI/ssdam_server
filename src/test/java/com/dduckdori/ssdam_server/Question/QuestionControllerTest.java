@@ -48,4 +48,29 @@ class QuestionControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
+    @Test
+    @DisplayName("특정유저질문조회")
+    @WithMockUser
+    public void 특정유저질문조회() throws Exception{
+        String id="PBAD3758_1";
+        this.mockMvc
+                .perform(get("/ssdam/question/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+    @Test
+    @DisplayName("특정유저질문조회_실패")
+    @WithMockUser
+    public void 특정유저질문조회_실패() throws Exception{
+        String id="PBAD3758_4";
+        this.mockMvc
+                .perform(get("/ssdam/question/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+    }
+
 }

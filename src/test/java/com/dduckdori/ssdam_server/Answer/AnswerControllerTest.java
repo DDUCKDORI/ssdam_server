@@ -85,10 +85,10 @@ class AnswerControllerTest {
     public void Save_Answer_Success() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(2);
+        answerDTO.setQust_id(7);
         answerDTO.setMem_id(1);
-        answerDTO.setInvite_cd("BBBBB00000");
-        answerDTO.setAns_cn("Test입니다!");
+        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setAns_cn("ㅁㅜㅇㅑㅎㅗ");
 
         this.mockMvc
                 .perform(post("/ssdam/answer")
