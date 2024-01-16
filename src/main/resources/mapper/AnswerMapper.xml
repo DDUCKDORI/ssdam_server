@@ -54,4 +54,11 @@
         AND MEM_ID = #{Mem_id}
         AND INVITE_CD = #{Invite_cd}
     </update>
+    <select id="Complete_Answer_YN" resultType="com.dduckdori.ssdam_server.Answer.CompleteDTO" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO">
+        SELECT B.INVITE_CD, (SELECT COUNT(*) FROM SD_MEMBER WHERE INVITE_CD = #{Invite_cd} GROUP BY INVITE_CD) AS MEM_NUM,
+               (SELECT COUNT(MEM_ID) FROM SD_ANSWER WHERE INVITE_CD=#{Invite_cd} AND CATE_ID =#{Cate_id} AND QUST_ID=#{Qust_id}) AS ANSWER_NUM
+        FROM SD_MEMBER AS B
+        WHERE B.INVITE_CD=#{Invite_cd}
+            LIMIT 1;
+    </select>
 </mapper>

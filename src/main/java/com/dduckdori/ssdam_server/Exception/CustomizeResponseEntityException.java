@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.Charset;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 
 @RestController
@@ -19,18 +20,13 @@ import java.text.ParseException;
 public class CustomizeResponseEntityException {
     HttpHeaders httpHeaders = new HttpHeaders();
 
-    @ExceptionHandler(NotFoundException.class)
-    public final ResponseEntity<Object> CanNotFoundUserException(Exception ex){
-        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail",ex.getMessage());
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public final ResponseEntity<Object> CanNotFoundAnswerException(Exception ex){
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail","답변이 등록되지 않았어요..");
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(TryAgainException.class)
-    public final ResponseEntity<Object> CanNotSaveAnswerException(Exception ex){
-        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail",ex.getMessage());
-        httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
-    }
+
     @ExceptionHandler(DuplicateKeyException.class)
     public final ResponseEntity<Object> DuplicateAnswerException(){
         ExceptionResponse exceptionResponse = new ExceptionResponse("Fail","이미 답변을 완료하였습니다.");
@@ -38,7 +34,7 @@ public class CustomizeResponseEntityException {
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({UnAuthroizedAccessException.class ,ParseException.class, JsonProcessingException.class, JOSEException.class, net.minidev.json.parser.ParseException.class})
+    @ExceptionHandler({NotFoundException.class, TryAgainException.class,UnAuthroizedAccessException.class ,ParseException.class, JsonProcessingException.class, JOSEException.class, net.minidev.json.parser.ParseException.class})
     public final ResponseEntity<Object> GeneralException(Exception ex){
         ExceptionResponse exceptionResponse = new ExceptionResponse("Fail", ex.getMessage());
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));

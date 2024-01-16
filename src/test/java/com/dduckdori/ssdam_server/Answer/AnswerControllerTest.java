@@ -105,10 +105,10 @@ class AnswerControllerTest {
     public void 답변_수정_성공() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(2);
-        answerDTO.setMem_id(2);
-        answerDTO.setInvite_cd("BBBBB00000");
-        answerDTO.setAns_cn("Test입니다!");
+        answerDTO.setQust_id(7);
+        answerDTO.setMem_id(1);
+        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setAns_cn("Test입니다!12");
 
         this.mockMvc
                 .perform(patch("/ssdam/answer")
@@ -116,6 +116,26 @@ class AnswerControllerTest {
                         .content(objectMapper.writeValueAsString(answerDTO))
                 )
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @DisplayName("답변_수정_실패")
+    @WithMockUser
+    public void 답변_수정_실패() throws Exception{
+        AnswerDTO answerDTO = new AnswerDTO();
+        answerDTO.setCate_id(2);
+        answerDTO.setQust_id(7);
+        answerDTO.setMem_id(3);
+        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setAns_cn("Test입니다!");
+
+        this.mockMvc
+                .perform(patch("/ssdam/answer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(answerDTO))
+                )
+                .andExpect(status().is4xxClientError())
                 .andDo(print());
     }
 }
