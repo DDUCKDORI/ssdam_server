@@ -21,6 +21,7 @@ public class AnswerController {
     private final AnswerService answerService;
     @PostMapping("/ssdam/answer") //답변 저장
     public ResponseEntity<AnswerResponse> Save_Answer(@Valid @RequestBody AnswerDTO answerDTO){
+        System.out.println("answerDTO = " + answerDTO);
         AnswerResponse answerResponse = new AnswerResponse();
         int result = answerService.Save_Answer(answerDTO);
         if(result != 1){
@@ -29,7 +30,8 @@ public class AnswerController {
         //이력 업데이트
         answerService.Save_Answer_Hist(answerDTO);
         //반환되는 데이터 만들건데 특정 초대코드에 해당하는 모든 유저 답변 여부 반환해주어야함
-        int non_ans_num = answerService.InviteCd_Ans_YN(answerDTO.getInvite_cd());
+        // int non_ans_num = answerService.InviteCd_Ans_YN(answerDTO.getInvite_cd());
+        int non_ans_num = answerService.complete_answer_YN(answerDTO);
         answerResponse.setNon_ans_num(non_ans_num);
         if(non_ans_num==0){
             answerResponse.setAll_ans_yn("True");
@@ -70,11 +72,10 @@ public class AnswerController {
     public ResponseEntity<AnswerResponse> Change_Answer(@RequestBody AnswerDTO answerDTO){
 
         AnswerResponse answerResponse = new AnswerResponse();
-        answerService.Update_Answer(answerDTO);
+        int non_ans_num = answerService.Update_Answer(answerDTO);
         answerDTO.setFst_inpr(answerDTO.getInvite_cd()+"_"+answerDTO.getMem_id());
         answerService.Save_Answer_Hist(answerDTO);
 
-        int non_ans_num = answerService.InviteCd_Ans_YN(answerDTO.getInvite_cd());
         answerResponse.setNon_ans_num(non_ans_num);
         if(non_ans_num==0){
             answerResponse.setAll_ans_yn("True");

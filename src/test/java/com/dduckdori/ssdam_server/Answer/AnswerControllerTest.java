@@ -66,9 +66,10 @@ class AnswerControllerTest {
     public void Save_Answer_Fail() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(1);
+        answerDTO.setQust_id(6);
         answerDTO.setMem_id(2);
-        answerDTO.setInvite_cd("AAAAA00000");
+        answerDTO.setInvite_cd("FHPU6883");
+        answerDTO.setAns_cn("ㅁㅜㅇㅑㅎㅗ");
 
         this.mockMvc
                 .perform(post("/ssdam/answer")

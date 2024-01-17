@@ -8,4 +8,6 @@ public interface AnswerService {
     AnswerDTO[] Find_Answer(String id) throws SQLIntegrityConstraintViolationException;
     int InviteCd_Ans_YN(String inviteCd);
     int Update_Answer(AnswerDTO answerDTO);
+
+    int complete_answer_YN(AnswerDTO answerDTO);
 }

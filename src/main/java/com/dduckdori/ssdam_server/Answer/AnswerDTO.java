@@ -13,19 +13,19 @@ public class AnswerDTO {
 
     private String result;
 
-    @NotNull
+    //@NotNull
     private int Cate_id;
     private String Cate_nm;
-    @NotNull
+    //@NotNull
     private int Qust_id;
     private String Qust_cn;
-    @NotNull
+   // @NotNull
     private int Mem_id;
-    @NotNull
-    @Size(max=10)
+    //@NotNull
+    //@Size(max=10)
     private String Invite_cd;
-    @NotNull
-    @Size(min=1, max=100)
+    //@NotNull
+    //@Size(min=1, max=100)
     private String Ans_cn;
     private Timestamp Ans_dtm;
     private String Fst_inpr;
