@@ -18,8 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +35,30 @@ class AnswerControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .addFilter(new CharacterEncodingFilter("UTF-8", true))
                 .build();
+    }
+    @Test
+    @DisplayName("해당 질문의 내 답변 조회 실패")
+    @WithMockUser
+    public void Get_Ssdam_Answer_Fail() throws Exception{
+        String id = "1_3_PBAD3758";
+        this.mockMvc
+                .perform(get("/ssdam/answer/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
+    }
+    @Test
+    @DisplayName("해당 질문의 내 답변 조회, 멤버 아이디 없음")
+    @WithMockUser
+    public void Get_Ssdam_Answer_No_MemId() throws Exception{
+        String id = "1_7_PBAD3758";
+        this.mockMvc
+                .perform(get("/ssdam/answer/"+id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
     }
     @Test
     @DisplayName("답변_저장_실패")
@@ -62,10 +85,10 @@ class AnswerControllerTest {
     public void Save_Answer_Success() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(2);
+        answerDTO.setQust_id(7);
         answerDTO.setMem_id(1);
-        answerDTO.setInvite_cd("BBBBB00000");
-        answerDTO.setAns_cn("Test입니다!");
+        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setAns_cn("ㅁㅜㅇㅑㅎㅗ");
 
         this.mockMvc
                 .perform(post("/ssdam/answer")
@@ -82,10 +105,10 @@ class AnswerControllerTest {
     public void 답변_수정_성공() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(2);
-        answerDTO.setMem_id(2);
-        answerDTO.setInvite_cd("BBBBB00000");
-        answerDTO.setAns_cn("Test입니다!");
+        answerDTO.setQust_id(7);
+        answerDTO.setMem_id(1);
+        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setAns_cn("Test입니다!12");
 
         this.mockMvc
                 .perform(patch("/ssdam/answer")
@@ -93,6 +116,26 @@ class AnswerControllerTest {
                         .content(objectMapper.writeValueAsString(answerDTO))
                 )
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @DisplayName("답변_수정_실패")
+    @WithMockUser
+    public void 답변_수정_실패() throws Exception{
+        AnswerDTO answerDTO = new AnswerDTO();
+        answerDTO.setCate_id(2);
+        answerDTO.setQust_id(7);
+        answerDTO.setMem_id(3);
+        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setAns_cn("Test입니다!");
+
+        this.mockMvc
+                .perform(patch("/ssdam/answer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(answerDTO))
+                )
+                .andExpect(status().is4xxClientError())
                 .andDo(print());
     }
 }

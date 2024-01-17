@@ -2,6 +2,7 @@ package com.dduckdori.ssdam_server.Login;
 
 import com.dduckdori.ssdam_server.Exception.TryAgainException;
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
+import com.dduckdori.ssdam_server.Response.ResponseDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.*;
@@ -22,6 +23,7 @@ import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +41,7 @@ import java.util.Random;
 
 @Service
 public class AppleLoginService implements LoginService {
-    @Value("${apple.clientId}")
+    @Value("${apple.audId}")
     private String APPLE_CLIENT_ID;
     @Value("${apple.redirectUri}")
     private String APPLE_REDIRECT_URL;
@@ -49,6 +51,8 @@ public class AppleLoginService implements LoginService {
     private String APPLE_TEAM_ID;
     @Value("${apple.clientSecret}")
     private String APPLE_KEY_PATH;
+
+
 
     private final static String APPLE_AUTH_URL="https://appleid.apple.com";
     private final LoginRepository loginRepository;
@@ -84,21 +88,21 @@ public class AppleLoginService implements LoginService {
         }
 
         String publicKeys = HttpClientUtils.doGet("https://appleid.apple.com/auth/keys");
-
         ObjectMapper objectMapper = new ObjectMapper();
         Keys keys = objectMapper.readValue(publicKeys,Keys.class);
         boolean signature = false;
 
         for(Key key : keys.getKeys()){
+
             RSAKey rsaKey = (RSAKey) JWK.parse(objectMapper.writeValueAsString(key));
             RSAPublicKey publicKey = rsaKey.toRSAPublicKey();
             JWSVerifier verifier = new RSASSAVerifier(publicKey);
+
             if(signedJWT.verify(verifier)){
                 appleDTO.setKid(signedJWT.getHeader().getKeyID());
                 signature=true;
             }
         }
-
         //공개키를 통해 header와 payload 의 값이 같은지 비교
         if(signature == false){
             throw new UnAuthroizedAccessException("적절하지 않은 접근입니다.");
@@ -144,19 +148,22 @@ public class AppleLoginService implements LoginService {
     @Transactional
     public ResponseDTO joinMember(LoginDTO loginDTO) {
         //초대코드 여부 판별
-        if(loginDTO.getInvite_cd()==null){
+        if(loginDTO.getInvite_cd()==null || loginDTO.getInvite_cd()==""){
             //8자리 초대코드 만들기
             loginDTO.setInvite_cd(make_InviteCd());
             loginDTO.setMem_id(1);
         }
         else{
             int mem_id = loginRepository.get_mem_id(loginDTO);
+            if(mem_id<0){
+                throw new TryAgainException("로그인에 실패했어요.. 잠시 후 다시 시도해 주세요!");
+            }
             loginDTO.setMem_id(mem_id+1);
         }
 
         int result = loginRepository.join_member(loginDTO);
         if(result!=1){
-            throw new TryAgainException("잠시 후 다시 시도해주시기 바랍니다.");
+            throw new TryAgainException("로그인 실패.. 잠시 후 다시 시도해주시기 바랍니다.");
         }
         result = loginRepository.join_member_token(loginDTO);
         if(result != 1){
@@ -194,6 +201,8 @@ public class AppleLoginService implements LoginService {
         return stringBuilder.toString();
     }
     private Map<String, String> getTokenRequest(String s, String clientSecret, String type) {
+        System.out.println("s = " + s);
+        System.out.println("clientSecret = " + clientSecret);
         Map<String,String> tokenRequest = new HashMap<>();
         tokenRequest.put("client_id", APPLE_CLIENT_ID); //그대로
         tokenRequest.put("client_secret", clientSecret); //그대로

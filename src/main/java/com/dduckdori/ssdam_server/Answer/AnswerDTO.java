@@ -15,8 +15,10 @@ public class AnswerDTO {
 
     @NotNull
     private int Cate_id;
+    private String Cate_nm;
     @NotNull
     private int Qust_id;
+    private String Qust_cn;
     @NotNull
     private int Mem_id;
     @NotNull
@@ -28,5 +30,7 @@ public class AnswerDTO {
     private Timestamp Ans_dtm;
     private String Fst_inpr;
     private String Last_updr;
+    private String Fm_dvcd;
+    private String Nick_nm;
 
 }

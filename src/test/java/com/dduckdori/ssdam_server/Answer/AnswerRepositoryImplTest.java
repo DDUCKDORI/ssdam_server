@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -36,7 +38,7 @@ class AnswerRepositoryImplTest {
     }
     @Test
     @DisplayName("나의_답변_조회")
-    public void Find_Answer(){
+    public void Find_Answer() throws SQLIntegrityConstraintViolationException{
         AnswerDTO test_answerDTO = new AnswerDTO();
         test_answerDTO.setInvite_cd("AAAAA00000");
         test_answerDTO.setQust_id(1);
@@ -48,7 +50,7 @@ class AnswerRepositoryImplTest {
     }
     @Test
     @DisplayName("초대코드별_답변_조회")
-    public void Find_Answer_Invite_Cd(){
+    public void Find_Answer_Invite_Cd() throws SQLIntegrityConstraintViolationException {
         AnswerDTO test_answerDTO = new AnswerDTO();
         test_answerDTO.setInvite_cd("AAAAA00000");
         test_answerDTO.setQust_id(1);
@@ -63,5 +65,15 @@ class AnswerRepositoryImplTest {
         String inviteCd="BBBBB00000";
         int result = answerMapper.Find_Non_Ans_Num(inviteCd);
         System.out.println("result = " + result);
+    }
+    @Test
+    @DisplayName("답변_완료_여부")
+    public void Complete_Answer_YN(){
+        AnswerDTO answerDTO = new AnswerDTO();
+        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setCate_id(1);
+        answerDTO.setQust_id(7);
+        CompleteDTO completeDTO = answerMapper.Complete_Answer_YN(answerDTO);
+        System.out.println("completeDTO = " + completeDTO);
     }
 }

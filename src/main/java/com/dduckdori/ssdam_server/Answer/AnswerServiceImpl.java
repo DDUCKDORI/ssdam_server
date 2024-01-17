@@ -1,7 +1,10 @@
 package com.dduckdori.ssdam_server.Answer;
 
+import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +24,7 @@ public class AnswerServiceImpl implements AnswerService{
     }
 
     @Override
-    public AnswerDTO[] Find_Answer(String id) {
+    public AnswerDTO[] Find_Answer(String id) throws SQLIntegrityConstraintViolationException {
 
         AnswerDTO answerDTO = new AnswerDTO();
         String[] s = id.split("_");
@@ -45,6 +48,12 @@ public class AnswerServiceImpl implements AnswerService{
     @Override
     public int Update_Answer(AnswerDTO answerDTO) {
         answerDTO.setLast_updr(answerDTO.getInvite_cd()+"_"+answerDTO.getMem_id());
+        // 특정 초대코드에 해당하는 모든 유저가 답변한 상태라면 답변 수정 불가
+        // 특정 초대코에 해당하는 유저 답변 여부 판단 필요
+        CompleteDTO completeDTO = answerRepository.complete_answer_YN(answerDTO);
+        if(completeDTO.getMem_num()==completeDTO.getAnswer_num()){
+            throw new NotFoundException("모든 구성원이 답변을 완료했어요..");
+        }
         return answerRepository.Update_Answer(answerDTO);
     }
 }

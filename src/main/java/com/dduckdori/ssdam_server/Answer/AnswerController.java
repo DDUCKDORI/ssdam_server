@@ -1,5 +1,6 @@
 package com.dduckdori.ssdam_server.Answer;
 
+import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import com.dduckdori.ssdam_server.Exception.TryAgainException;
 import com.dduckdori.ssdam_server.Response.AnswerResponse;
 import jakarta.validation.Valid;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.Charset;
+import java.sql.SQLIntegrityConstraintViolationException;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,20 +45,22 @@ public class AnswerController {
     }
     //CateId_QustId_InviteCd_MemId
     @GetMapping("/ssdam/answer/{id}") //나의 답변 조회 & 초대코드별 모든 구성원 답변 조회
-    public ResponseEntity<AnswerDTO[]> Read_Answer(@PathVariable String id){
+    public ResponseEntity<AnswerDTO[]> Read_Answer(@PathVariable String id) throws SQLIntegrityConstraintViolationException {
 
         String[] s = id.split("_");
         if(!(s.length==3 || s.length==4)){
             throw new TryAgainException("잘못된 요청입니다.");
         }
         AnswerDTO[] answer_list = answerService.Find_Answer(id);
-
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
-        if (answer_list != null) {
+        if (answer_list.length != 0) {
             for( AnswerDTO answerDTO : answer_list){
                 answerDTO.setResult("Success");
             }
+        }
+        else{
+            throw new NotFoundException("해당 질문이 없어요..");
         }
         return new ResponseEntity<>(answer_list,httpHeaders, HttpStatus.OK);
     }
@@ -64,8 +68,7 @@ public class AnswerController {
     //나의 답변 수정
     @PatchMapping("/ssdam/answer")
     public ResponseEntity<AnswerResponse> Change_Answer(@RequestBody AnswerDTO answerDTO){
-        //특정 초대코드에 해당하는 모든 유저가 답변한 상태라면 답변 수정 불가
-        // 특정 초대코에 해당하는 유저 답변 여부 판단 필요
+
         AnswerResponse answerResponse = new AnswerResponse();
         answerService.Update_Answer(answerDTO);
         answerDTO.setFst_inpr(answerDTO.getInvite_cd()+"_"+answerDTO.getMem_id());

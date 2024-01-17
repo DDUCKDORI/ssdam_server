@@ -1,7 +1,7 @@
 package com.dduckdori.ssdam_server.Login;
 
 import com.dduckdori.ssdam_server.Mapper.LoginMapper;
-import lombok.RequiredArgsConstructor;
+import com.dduckdori.ssdam_server.Response.ResponseDTO;
 import org.springframework.stereotype.Repository;
 
 @Repository

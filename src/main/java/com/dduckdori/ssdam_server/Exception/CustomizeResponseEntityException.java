@@ -10,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 
 import java.nio.charset.Charset;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 
 @RestController
@@ -20,18 +20,13 @@ import java.text.ParseException;
 public class CustomizeResponseEntityException {
     HttpHeaders httpHeaders = new HttpHeaders();
 
-    @ExceptionHandler(NotFoundUserException.class)
-    public final ResponseEntity<Object> CanNotFoundUserException(Exception ex){
-        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail",ex.getMessage());
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public final ResponseEntity<Object> CanNotFoundAnswerException(Exception ex){
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail","답변이 등록되지 않았어요..");
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(TryAgainException.class)
-    public final ResponseEntity<Object> CanNotSaveAnswerException(Exception ex){
-        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail",ex.getMessage());
-        httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
-        return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
-    }
+
     @ExceptionHandler(DuplicateKeyException.class)
     public final ResponseEntity<Object> DuplicateAnswerException(){
         ExceptionResponse exceptionResponse = new ExceptionResponse("Fail","이미 답변을 완료하였습니다.");
@@ -39,9 +34,9 @@ public class CustomizeResponseEntityException {
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({UnAuthroizedAccessException.class ,ParseException.class, JsonProcessingException.class, JOSEException.class, net.minidev.json.parser.ParseException.class})
-    public final ResponseEntity<Object> GeneralException(){
-        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail","로그인에 실패하였습니다. 잠시 후 다시 시도해 주세요.");
+    @ExceptionHandler({NotFoundException.class, TryAgainException.class,UnAuthroizedAccessException.class ,ParseException.class, JsonProcessingException.class, JOSEException.class, net.minidev.json.parser.ParseException.class})
+    public final ResponseEntity<Object> GeneralException(Exception ex){
+        ExceptionResponse exceptionResponse = new ExceptionResponse("Fail", ex.getMessage());
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(exceptionResponse,HttpStatus.BAD_REQUEST);
     }

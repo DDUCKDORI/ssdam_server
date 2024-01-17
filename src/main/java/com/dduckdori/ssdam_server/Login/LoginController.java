@@ -1,6 +1,7 @@
 package com.dduckdori.ssdam_server.Login;
 
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
+import com.dduckdori.ssdam_server.Response.ResponseDTO;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class LoginController {
     }
     @RequestMapping(value="/ssdam/apple/login/callback",method=RequestMethod.POST)
     @ResponseBody
-    public ResponseEntity<LoginDTO> appleCallBack(AppleDTO appleDTO) throws ParseException, IOException, JOSEException, UnAuthroizedAccessException, net.minidev.json.parser.ParseException {
+    public ResponseEntity<LoginDTO> appleCallBack(@RequestBody AppleDTO appleDTO) throws ParseException, IOException, JOSEException, UnAuthroizedAccessException, net.minidev.json.parser.ParseException {
         //code
         //id_token
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -51,13 +52,14 @@ public class LoginController {
             String reIssueAccessToken = loginService.ReIssueAccessToken(loginDTO);
 
             loginDTO.setAccess_token(reIssueAccessToken);
+            loginDTO.setExists_yn("yes");
             // loginDTO 에 담아 반환.
             return new ResponseEntity<>(loginDTO,httpHeaders,HttpStatus.OK);
         }
         //없다면 프로세스 진행 -> sub랑 Refresh_token 저장 -> Okay
 
         loginDTO = loginService.authToken(appleDTO);
-
+        loginDTO.setExists_yn("no");
         return new ResponseEntity<>(loginDTO, httpHeaders, HttpStatus.OK);
     }
     //refresh_token 저장과 회원 정보는 이후 API 에서 진행
