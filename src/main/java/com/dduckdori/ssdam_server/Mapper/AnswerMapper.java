@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.springframework.context.annotation.Bean;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 
 
 @Mapper
@@ -17,4 +18,6 @@ public interface AnswerMapper {
     int Update_Answer(AnswerDTO answerDTO);
 
     CompleteDTO Complete_Answer_YN(AnswerDTO answerDTO);
+
+    CompleteDTO[] Find_Complete_Ans_date(HashMap<String, String> hashMap);
 }

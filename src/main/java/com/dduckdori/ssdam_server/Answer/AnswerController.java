@@ -2,6 +2,7 @@ package com.dduckdori.ssdam_server.Answer;
 
 import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import com.dduckdori.ssdam_server.Exception.TryAgainException;
+import com.dduckdori.ssdam_server.Response.AnswerCompleteResponse;
 import com.dduckdori.ssdam_server.Response.AnswerResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.Charset;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 
 @RestController
 @RequiredArgsConstructor
@@ -88,5 +90,19 @@ public class AnswerController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(answerResponse,httpHeaders, HttpStatus.OK);
+    }
+    @GetMapping("/ssdam/answer/{invite_cd}/{year_month}")
+    public ResponseEntity<AnswerCompleteResponse> Complete_Ans_List(@PathVariable String invite_cd, @PathVariable String year_month){
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
+
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("Invite_cd", invite_cd);
+        hashMap.put("Year_Month",year_month);
+        AnswerCompleteResponse answerCompleteResponse = new AnswerCompleteResponse();
+        answerCompleteResponse.setResult("Success");
+        answerCompleteResponse.setDate(answerService.Find_Complete_Ans_Date(hashMap));
+        return new ResponseEntity<>(answerCompleteResponse,httpHeaders, HttpStatus.OK);
     }
 }

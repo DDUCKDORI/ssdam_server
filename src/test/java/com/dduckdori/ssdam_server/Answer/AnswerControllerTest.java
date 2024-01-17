@@ -139,4 +139,17 @@ class AnswerControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
     }
+    @Test
+    @DisplayName("초대코드별_답변완료_날짜")
+    @WithMockUser
+    public void 초대코드별_답변완료_날짜() throws Exception{
+        String invite_cd = "aaaa1234";
+        String year_month = "202401";
+        this.mockMvc
+                .perform(get("/ssdam/answer/"+invite_cd+"/"+year_month)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 }
