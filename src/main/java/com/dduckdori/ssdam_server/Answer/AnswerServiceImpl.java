@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -54,6 +56,26 @@ public class AnswerServiceImpl implements AnswerService{
         if(completeDTO.getMem_num()==completeDTO.getAnswer_num()){
             throw new NotFoundException("모든 구성원이 답변을 완료했어요..");
         }
-        return answerRepository.Update_Answer(answerDTO);
+        answerRepository.Update_Answer(answerDTO);
+        return completeDTO.getMem_num()-completeDTO.getAnswer_num();
+    }
+
+    @Override
+    public int complete_answer_YN(AnswerDTO answerDTO) {
+        CompleteDTO completeDTO = answerRepository.complete_answer_YN(answerDTO);
+
+        return completeDTO.getMem_num()-completeDTO.getAnswer_num();
+    }
+
+    @Override
+    public ArrayList<String> Find_Complete_Ans_Date(HashMap<String, String> hashMap) {
+        ArrayList<String> arrayList = new ArrayList<>();
+        CompleteDTO[] completeDTOS = answerRepository.Find_Complete_Ans_date(hashMap);
+        for(CompleteDTO completeDTO : completeDTOS){
+            if(completeDTO.getMem_num() == completeDTO.getAnswer_num()){
+                arrayList.add(completeDTO.getArrive_dtm().substring(6,8));
+            }
+        }
+        return arrayList;
     }
 }

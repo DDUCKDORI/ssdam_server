@@ -5,6 +5,7 @@ import com.dduckdori.ssdam_server.Mapper.AnswerMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 
 @Repository
 
@@ -44,4 +45,9 @@ public class AnswerRepositoryImpl implements AnswerRepository{
         public CompleteDTO complete_answer_YN(AnswerDTO answerDTO) {
             return answerMapper.Complete_Answer_YN(answerDTO);
         }
+
+    @Override
+    public CompleteDTO[] Find_Complete_Ans_date(HashMap<String, String> hashMap) {
+        return answerMapper.Find_Complete_Ans_date(hashMap);
+    }
 }

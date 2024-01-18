@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,5 +76,15 @@ class AnswerRepositoryImplTest {
         answerDTO.setQust_id(7);
         CompleteDTO completeDTO = answerMapper.Complete_Answer_YN(answerDTO);
         System.out.println("completeDTO = " + completeDTO);
+    }
+    @Test
+    public void Complete_answerlist(){
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("Invite_cd","aaaa1234");
+        hashMap.put("Year_Month","202401");
+        CompleteDTO[] completeDTOS = answerMapper.Find_Complete_Ans_date(hashMap);
+        for (CompleteDTO completeDTO : completeDTOS){
+            System.out.println("completeDTO = " + completeDTO);
+        }
     }
 }
