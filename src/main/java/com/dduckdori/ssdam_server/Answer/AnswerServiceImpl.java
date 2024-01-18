@@ -78,4 +78,9 @@ public class AnswerServiceImpl implements AnswerService{
         }
         return arrayList;
     }
+
+    @Override
+    public int Find_Question(AnswerDTO answerDTO) {
+        return answerRepository.Find_Question(answerDTO);
+    }
 }

@@ -25,6 +25,10 @@ public class AnswerController {
     public ResponseEntity<AnswerResponse> Save_Answer(@Valid @RequestBody AnswerDTO answerDTO){
         System.out.println("answerDTO = " + answerDTO);
         AnswerResponse answerResponse = new AnswerResponse();
+        int count = answerService.Find_Question(answerDTO);
+        if(count == 0){
+            throw new NotFoundException("등록된 질문이 없어요..");
+        }
         int result = answerService.Save_Answer(answerDTO);
         if(result != 1){
             throw new TryAgainException("잠시 후 다시 시도해주시기 바랍니다.");

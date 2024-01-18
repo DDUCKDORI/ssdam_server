@@ -14,4 +14,6 @@ public interface AnswerService {
     int complete_answer_YN(AnswerDTO answerDTO);
 
     ArrayList<String> Find_Complete_Ans_Date(HashMap<String, String> hashMap);
+
+    int Find_Question(AnswerDTO answerDTO);
 }
