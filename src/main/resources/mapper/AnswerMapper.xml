@@ -76,4 +76,7 @@
                     GROUP BY A.CATE_ID,A.QUST_ID,A.INVITE_CD) AS D
         ON C.ARRIVE_DTM = D.ARRIVE_DTM;
     </select>
+    <select id = "Find_Question" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO" resultType="int">
+        SELECT COUNT(*) FROM SD_SEND_DETLSD WHERE CATE_ID = #{Cate_id} AND QUST_ID =#{Qust_id} AND INVITE_CD=#{Invite_cd};
+    </select>
 </mapper>

@@ -61,14 +61,15 @@ class AnswerControllerTest {
                 .andDo(print());
     }
     @Test
+    @Transactional
     @DisplayName("답변_저장_실패")
     @WithMockUser
     public void Save_Answer_Fail() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(6);
-        answerDTO.setMem_id(2);
-        answerDTO.setInvite_cd("FHPU6883");
+        answerDTO.setQust_id(2);
+        answerDTO.setMem_id(1);
+        answerDTO.setInvite_cd("XRHV3887");
         answerDTO.setAns_cn("ㅁㅜㅇㅑㅎㅗ");
 
         this.mockMvc
@@ -86,9 +87,9 @@ class AnswerControllerTest {
     public void Save_Answer_Success() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(7);
+        answerDTO.setQust_id(4);
         answerDTO.setMem_id(1);
-        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setInvite_cd("EXRD5370");
         answerDTO.setAns_cn("ㅁㅜㅇㅑㅎㅗ");
 
         this.mockMvc

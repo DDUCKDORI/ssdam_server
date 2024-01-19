@@ -50,4 +50,9 @@ public class AnswerRepositoryImpl implements AnswerRepository{
     public CompleteDTO[] Find_Complete_Ans_date(HashMap<String, String> hashMap) {
         return answerMapper.Find_Complete_Ans_date(hashMap);
     }
+
+    @Override
+    public int Find_Question(AnswerDTO answerDTO) {
+        return answerMapper.Find_Question(answerDTO);
+    }
 }
