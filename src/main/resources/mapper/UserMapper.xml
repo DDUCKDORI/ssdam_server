@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dduckdori.ssdam_server.Mapper.UserMapper">
+
+    <select id="find_max_id" parameterType="String">
+        SELECT MAX(MEM_ID)
+        FROM SD_MEMBER
+        WHERE INVITE_CD = #{code}
+    </select>
+
+    <update id="join_with_code" parameterType="com.dduckdori.ssdam_server.User.UserDTO">
+        UPDATE SD_MEMBER
+        SET INVITE_CD = #{newCode}, MEM_ID = #{newId}
+        WHERE INVITE_CD = #{oldCode}
+        AND MEM_ID = #{memId}
+    </update>
+
+    <delete id="delete_user_answer" parameterType="com.dduckdori.ssdam_server.User.UserDTO">
+        DELETE FROM SD_ANSWER
+        WHERE INVITE_CD = #{oldCode} AND MEM_ID = #{memId};
+    </delete>
+
+    <delete id="delete_answer_history" parameterType="com.dduckdori.ssdam_server.User.UserDTO">
+        DELETE FROM SD_ANS_HIST
+        WHERE INVITE_CD = #{oldCode} AND MEM_ID = #{memId};
+    </delete>
+
+</mapper>
