@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dduckdori.ssdam_server.Mapper.AnswerMapper">
+
+    <insert id="Save_Answer" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO">
+        INSERT INTO SD_ANSWER (CATE_ID,QUST_ID,MEM_ID,INVITE_CD,ANS_CN,ANS_DTM,FST_INPR,LAST_UPDR)
+        VALUES(#{Cate_id},#{Qust_id},#{Mem_id},#{Invite_cd},#{Ans_cn},NOW(),#{Fst_inpr},#{Last_updr})
+    </insert>
+
+    <insert id="Save_Answer_Hist" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO">
+        INSERT INTO SD_ANS_HIST (CATE_ID,QUST_ID,MEM_ID,INVITE_CD,ANS_CN,ANS_DTM,FST_INPR,LAST_UPDR)
+        VALUES(#{Cate_id},#{Qust_id},#{Mem_id},#{Invite_cd},#{Ans_cn},NOW(),#{Fst_inpr},#{Last_updr})
+    </insert>
+
+    <select id="Find_Answer" resultType="com.dduckdori.ssdam_server.Answer.AnswerDTO" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO">
+        SELECT B.CATE_ID, D.CATE_NM,B.QUST_ID, E.QUST_CN, A.MEM_ID, A.INVITE_CD, C.ANS_CN, C.ANS_DTM, A.FM_DVCD, A.NICK_NM
+        FROM SD_MEMBER A
+        LEFT JOIN SD_SEND_DETLSD B
+            ON A.INVITE_CD = B.INVITE_CD
+        LEFT JOIN SD_ANSWER C
+            ON C.INVITE_CD = B.INVITE_CD
+            AND C.CATE_ID = B.CATE_ID
+            AND C.QUST_ID = B.QUST_ID
+            AND A.MEM_ID = C.MEM_ID
+        JOIN SD_CATEGORY D
+            ON B.CATE_ID=D.CATE_ID
+        JOIN SD_QUESTION E
+            ON D.CATE_ID = E.CATE_ID
+            AND B.QUST_ID = E.QUST_ID
+        WHERE A.INVITE_CD = #{Invite_cd}
+        AND B.CATE_ID = #{Cate_id}
+        AND B.QUST_ID = #{Qust_id}
+          <if test="Mem_id != null and Mem_id !=''">
+              AND A.MEM_ID = #{Mem_id}
+          </if>
+    </select>
+
+    <select id="Find_Non_Ans_Num" resultType="int" parameterType="String">
+        SELECT COUNT(*) AS NON_ANS_NUM
+        FROM SD_MEMBER AS A
+                 LEFT JOIN SD_SEND_DETLSD AS B ON A.INVITE_CD=B.INVITE_CD
+                 LEFT JOIN SD_ANSWER AS C ON B.QUST_ID=C.QUST_ID AND B.CATE_ID=C.CATE_ID AND B. INVITE_CD=C.INVITE_CD AND A.MEM_ID=C.MEM_ID
+                 LEFT JOIN SD_QUESTION AS D ON B.QUST_ID=D.QUST_ID AND B.CATE_ID=D.CATE_ID
+        WHERE C.ANS_CN IS NULL
+        AND A.INVITE_CD = #{inviteCd}
+    </select>
+
+    <update id="Update_Answer" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO">
+        UPDATE SD_ANSWER
+        SET ANS_CN = #{Ans_cn}, LAST_UPDR = #{Last_updr} , ANS_DTM = now(), LAST_UPD_DTM = now()
+        WHERE CATE_ID = #{Cate_id}
+        AND QUST_ID = #{Qust_id}
+        AND MEM_ID = #{Mem_id}
+        AND INVITE_CD = #{Invite_cd}
+    </update>
+    <select id="Complete_Answer_YN" resultType="com.dduckdori.ssdam_server.Answer.CompleteDTO" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO">
+        SELECT B.INVITE_CD, (SELECT COUNT(*) FROM SD_MEMBER WHERE INVITE_CD = #{Invite_cd} GROUP BY INVITE_CD) AS MEM_NUM,
+               (SELECT COUNT(MEM_ID) FROM SD_ANSWER WHERE INVITE_CD=#{Invite_cd} AND CATE_ID =#{Cate_id} AND QUST_ID=#{Qust_id}) AS ANSWER_NUM
+        FROM SD_MEMBER AS B
+        WHERE B.INVITE_CD=#{Invite_cd}
+            LIMIT 1;
+    </select>
+    <select id="Find_Complete_Ans_date" parameterType="Map" resultType="com.dduckdori.ssdam_server.Answer.CompleteDTO">
+        SELECT C.ARRIVE_DTM,C.INVITE_CD, C.MEM_NUM,IFNULL(D.ANS_NUM,0) AS ANSWER_NUM
+        FROM (SELECT ARRIVE_DTM, INVITE_CD,(SELECT COUNT(*) FROM SD_MEMBER WHERE INVITE_CD=#{Invite_cd}) AS MEM_NUM
+              FROM SD_SEND_DETLSD
+              WHERE INVITE_CD = #{Invite_cd} AND ARRIVE_DTM LIKE CONCAT(#{Year_Month},'%')) AS C
+        LEFT JOIN (SELECT A.CATE_ID,A.QUST_ID,A.INVITE_CD,COUNT(*) AS ANS_NUM,A.ARRIVE_DTM
+                    FROM SD_SEND_DETLSD AS A
+                    JOIN SD_ANSWER AS B
+                        ON A.CATE_ID=B.CATE_ID
+                        AND A.QUST_ID = B.QUST_ID
+                        AND A.INVITE_CD = B.INVITE_CD
+                    WHERE A.INVITE_CD = #{Invite_cd} AND A.ARRIVE_DTM LIKE CONCAT(#{Year_Month},'%')
+                    GROUP BY A.CATE_ID,A.QUST_ID,A.INVITE_CD) AS D
+        ON C.ARRIVE_DTM = D.ARRIVE_DTM;
+    </select>
+</mapper>
