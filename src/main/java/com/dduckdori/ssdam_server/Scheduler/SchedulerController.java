@@ -19,15 +19,19 @@ public class SchedulerController {
 
     //todo 배포 시 적용해야할 부분1
     //@Scheduled(cron="0 0 11 * * *",zone="Asia/Seoul") //매일 오전 11시에 실행
-    @Scheduled(cron = "0 0/1 0-23 * * *",zone="Asia/Seoul") //5분마다 실행.
+    //@Scheduled(cron = "0 0/1 0-23 * * *",zone="Asia/Seoul") //5분마다 실행.
+    @Scheduled(fixedDelay = 10000)
     public void findall(){
-        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("Start Sending Question : " + LocalDateTime.now());
         //모든 유저가 답변 완료한 초대코드 뽑아내기
-        h_map= schedulerService.getAllQuestion_notSend();
-        System.out.println("h_map = " + h_map);
+        h_map = schedulerService.getAllQuestion_notSend();
+        if(h_map == null){
+            return ;
+        }
+        //h_map에는 초대코드별 발송한 질문들 들어있음.
         //안보낸 질문들 선별
-        //send_question = schedulerService.get_Question(h_map);
-        //schedulerService.send_Question(send_question);
+        send_question = schedulerService.get_Question(h_map);
+        schedulerService.send_Question(send_question);
     }
 
 }
