@@ -33,14 +33,14 @@ public class UserController {
            joinResponse.setResult("Fail");
            return new ResponseEntity<>(joinResponse, httpHeaders, HttpStatus.BAD_REQUEST);
        }
-        userDTO.setNewId(newId);
+        userDTO.setNewId(newId + 1);
 
         userService.delete_user_answer(userDTO);
         userService.delete_answer_history(userDTO);
         userService.join_with_code(userDTO);
 
         joinResponse.setResult("Success");
-        joinResponse.setMemId(newId);
+        joinResponse.setMemId(newId + 1);
 
         return new ResponseEntity<>(joinResponse, httpHeaders, HttpStatus.OK);
     }
