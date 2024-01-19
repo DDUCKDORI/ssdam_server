@@ -3,7 +3,7 @@
 <!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dduckdori.ssdam_server.Mapper.UserMapper">
 
-    <select id="find_max_id" parameterType="String">
+    <select id="find_max_id" parameterType="String" resultType="Integer">
         SELECT MAX(MEM_ID)
         FROM SD_MEMBER
         WHERE INVITE_CD = #{code}

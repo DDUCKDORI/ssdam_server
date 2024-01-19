@@ -10,7 +10,11 @@ public class UserRepositoryImpl implements UserRepository{
     public UserRepositoryImpl(UserMapper userMapper) { this.userMapper = userMapper; }
 
     @Override
-    public int find_max_id(String code) {
+    public Integer find_max_id(String code) {
+        Integer result = userMapper.find_max_id(code);
+        if (result == null) {
+            return -1;
+        }
         return userMapper.find_max_id(code);
     }
 

@@ -10,7 +10,7 @@ public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
 
     @Override
-    public int find_max_id(String code) {
+    public Integer find_max_id(String code) {
      return userRepository.find_max_id(code);
     }
 
