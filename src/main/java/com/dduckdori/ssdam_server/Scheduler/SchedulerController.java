@@ -19,7 +19,7 @@ public class SchedulerController {
 
     //todo 배포 시 적용해야할 부분1
     //@Scheduled(cron="0 0 9 * * *",zone="Asia/Seoul") //매일 오전 11시에 실행
-    @Scheduled(cron = "0 0/3 0-23 * * *",zone="Asia/Seoul") //30분마다 실행.
+    @Scheduled(cron = "0 0/30 0-23 * * *",zone="Asia/Seoul") //30분마다 실행.
     //@Scheduled(fixedDelay = 10000)
     public void findall(){
         System.out.println("Start Sending Question : " + LocalDateTime.now());
