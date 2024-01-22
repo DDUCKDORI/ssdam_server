@@ -17,6 +17,7 @@ public class QuestionDTO {
     String Cate_nm;
     int Qust_id;
     String Qust_cn;
+    Timestamp Qus_dtm;
     String Ans_cn;
     Timestamp Ans_dtm;
     String Rpy_yn;

@@ -2,6 +2,7 @@ package com.dduckdori.ssdam_server.Login;
 
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
 import com.dduckdori.ssdam_server.Response.ResponseDTO;
+import com.dduckdori.ssdam_server.Scheduler.SchedulerService;
 import com.nimbusds.jose.JOSEException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -69,6 +70,7 @@ public class LoginController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
         ResponseDTO responseDTO = loginService.joinMember(loginDTO);
+        //SD_SEND_DETLSD(발송내역 테이블)에 1,1 질문 추가
 
         return new ResponseEntity<>(responseDTO,httpHeaders,HttpStatus.OK);
     }

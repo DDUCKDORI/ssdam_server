@@ -87,9 +87,9 @@ class AnswerControllerTest {
     public void Save_Answer_Success() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(4);
-        answerDTO.setMem_id(1);
-        answerDTO.setInvite_cd("EXRD5370");
+        answerDTO.setQust_id(2);
+        answerDTO.setMem_id(4);
+        answerDTO.setInvite_cd("MJZJ1206");
         answerDTO.setAns_cn("ㅁㅜㅇㅑㅎㅗ");
 
         this.mockMvc
@@ -107,9 +107,9 @@ class AnswerControllerTest {
     public void 답변_수정_성공() throws Exception{
         AnswerDTO answerDTO = new AnswerDTO();
         answerDTO.setCate_id(1);
-        answerDTO.setQust_id(7);
+        answerDTO.setQust_id(2);
         answerDTO.setMem_id(1);
-        answerDTO.setInvite_cd("PBAD3758");
+        answerDTO.setInvite_cd("MJZJ1206");
         answerDTO.setAns_cn("Test입니다!12");
 
         this.mockMvc

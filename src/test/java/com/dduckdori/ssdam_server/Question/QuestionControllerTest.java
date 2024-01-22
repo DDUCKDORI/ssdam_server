@@ -52,7 +52,7 @@ class QuestionControllerTest {
     @DisplayName("특정유저질문조회")
     @WithMockUser
     public void 특정유저질문조회() throws Exception{
-        String id="PBAD3758_1";
+        String id="MJZJ1206_1";
         this.mockMvc
                 .perform(get("/ssdam/question/"+id)
                         .contentType(MediaType.APPLICATION_JSON)

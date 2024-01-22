@@ -16,4 +16,6 @@ public interface QuestionMapper {
     DateResponse find_question_specific_date(HashMap<String, String> param);
 
     AnswerList[] find_answer_specific_date(DateResponse dateResponse);
+
+    int find_ans_num(QuestionDTO questionDTO);
 }

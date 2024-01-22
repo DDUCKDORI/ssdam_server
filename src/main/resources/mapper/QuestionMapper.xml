@@ -3,32 +3,25 @@
 <!DOCTYPE mapper PUBLIC "-//iybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.dduckdori.ssdam_server.Mapper.QuestionMapper">
     <select id="find_question" resultType="com.dduckdori.ssdam_server.Question.QuestionDTO" parameterType="com.dduckdori.ssdam_server.Question.QuestionDTO">
-        SELECT A.MEM_ID,A.INVITE_CD, B.QUST_ID,B.CATE_ID,F.CATE_NM,D.QUST_CN, C.ANS_CN,C.ANS_DTM,
-               CASE
-                   WHEN C.ANS_CN IS NULL THEN 'FALSE'
-                   ELSE 'TRUE'
-                   END AS RPY_YN,
-               E.NON_ANS_NUM
+        SELECT A.MEM_ID, A.INVITE_CD, B.FST_INPUT_DTM AS QUS_DTM, B.QUST_ID, B.CATE_ID, F.CATE_NM, D.QUST_CN, C.ANS_CN, C.ANS_DTM
         FROM SD_MEMBER AS A
-                 LEFT JOIN SD_SEND_DETLSD AS B ON A.INVITE_CD=B.INVITE_CD
-                 LEFT JOIN SD_ANSWER AS C ON B.QUST_ID=C.QUST_ID AND B.CATE_ID=C.CATE_ID AND B. INVITE_CD=C.INVITE_CD AND A.MEM_ID=C.MEM_ID
-                 LEFT JOIN SD_QUESTION AS D ON B.QUST_ID=D.QUST_ID AND B.CATE_ID=D.CATE_ID
-                 LEFT JOIN SD_CATEGORY AS F on F.CATE_ID = D.CATE_ID
-                 LEFT JOIN (SELECT A.INVITE_CD, COUNT(*) AS NON_ANS_NUM
-                            FROM SD_MEMBER AS A
-                                     LEFT JOIN SD_SEND_DETLSD AS B ON A.INVITE_CD=B.INVITE_CD
-                                     LEFT JOIN SD_ANSWER AS C ON B.QUST_ID=C.QUST_ID AND B.CATE_ID=C.CATE_ID AND B. INVITE_CD=C.INVITE_CD AND A.MEM_ID=C.MEM_ID
-                                     LEFT JOIN SD_QUESTION AS D ON B.QUST_ID=D.QUST_ID AND B.CATE_ID=D.CATE_ID
-                            WHERE C.ANS_CN IS NULL
-                            GROUP BY A.INVITE_CD) AS E
-                           ON E.INVITE_CD=A.INVITE_CD
-        WHERE A.MEM_ID=#{Mem_id}
-          AND A.INVITE_CD=#{Invite_cd}
+            LEFT JOIN SD_SEND_DETLSD AS B ON A.INVITE_CD = B.INVITE_CD
+            LEFT JOIN SD_ANSWER AS C ON B.QUST_ID = C.QUST_ID AND B.CATE_ID = C.CATE_ID AND B.INVITE_CD=C.INVITE_CD AND A.MEM_ID = C.MEM_ID
+            LEFT JOIN SD_QUESTION AS D ON B.QUST_ID = D.QUST_ID AND B.CATE_ID = D.CATE_ID
+            LEFT JOIN SD_CATEGORY AS F ON F.CATE_ID = D.CATE_ID
+        WHERE A.MEM_ID = #{Mem_id}
+          AND A.INVITE_CD = #{Invite_cd}
         ORDER BY B.FST_INPUT_DTM DESC
         LIMIT 1
     </select>
     <select id="familyNum" resultType="int" parameterType="String">
         SELECT COUNT(*) AS FAMILY_NUM FROM SD_MEMBER WHERE INVITE_CD = #{Invite_cd}
+    </select>
+    <select id = "find_ans_num" resultType="int" parameterType="com.dduckdori.ssdam_server.Question.QuestionDTO">
+        SELECT COUNT(*) AS ANS_NUM FROM SD_SEND_DETLSD AS A
+        LEFT JOIN SD_ANSWER AS B
+            ON A.CATE_ID = B.CATE_ID AND A.QUST_ID=B.QUST_ID AND A.INVITE_CD=B.INVITE_CD
+        WHERE A.CATE_ID =#{Cate_id} AND A.QUST_ID=#{Qust_id} AND B.ANS_CN IS NOT NULL
     </select>
     <select id="find_question_specific_date" parameterType="Map" resultType="com.dduckdori.ssdam_server.Response.DateResponse">
         SELECT A.QUST_ID, A.CATE_ID, A.QUST_CN
