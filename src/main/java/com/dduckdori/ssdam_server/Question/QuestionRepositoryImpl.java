@@ -33,4 +33,9 @@ public class QuestionRepositoryImpl implements QuestionRepository{
     public AnswerList[] find_answer_date(DateResponse dateResponse) {
         return questionMapper.find_answer_specific_date(dateResponse);
     }
+
+    @Override
+    public int find_ans_num(QuestionDTO questionDTO) {
+        return questionMapper.find_ans_num(questionDTO);
+    }
 }

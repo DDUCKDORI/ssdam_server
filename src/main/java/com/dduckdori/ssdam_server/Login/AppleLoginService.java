@@ -3,6 +3,9 @@ package com.dduckdori.ssdam_server.Login;
 import com.dduckdori.ssdam_server.Exception.TryAgainException;
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
 import com.dduckdori.ssdam_server.Response.ResponseDTO;
+import com.dduckdori.ssdam_server.Scheduler.SchedulerDTO;
+import com.dduckdori.ssdam_server.Scheduler.SchedulerRepository;
+import com.dduckdori.ssdam_server.Scheduler.SchedulerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.*;
@@ -31,12 +34,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 @Service
@@ -56,8 +58,10 @@ public class AppleLoginService implements LoginService {
 
     private final static String APPLE_AUTH_URL="https://appleid.apple.com";
     private final LoginRepository loginRepository;
-    public AppleLoginService(LoginRepository loginRepository){
+    private final SchedulerRepository schedulerRepository;
+    public AppleLoginService(LoginRepository loginRepository, SchedulerRepository schedulerRepository){
         this.loginRepository=loginRepository;
+        this.schedulerRepository = schedulerRepository;
     }
 
     @Override
@@ -169,6 +173,21 @@ public class AppleLoginService implements LoginService {
         if(result != 1){
             throw new TryAgainException("잠시 후 다시 시도해주시기 바랍니다.");
         }
+        //회원가입과 함께 1,1 질문 add
+        List<SchedulerDTO> input_param = new ArrayList<>();
+        SchedulerDTO schedulerDTO = new SchedulerDTO();
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formateNow = now.format(formatter);
+
+        schedulerDTO.setCate_id(1);
+        schedulerDTO.setQust_id(1);
+        schedulerDTO.setInvite_cd(loginDTO.getInvite_cd());
+        schedulerDTO.setArrive_dtm(formateNow);
+        input_param.add(schedulerDTO);
+
+        schedulerRepository.insert_Question(input_param);
+
         ResponseDTO responseDTO = loginRepository.find_mem_info(loginDTO);
         responseDTO.setAccess_token(loginDTO.getAccess_token());
         responseDTO.setRefresh_token(loginDTO.getRefresh_token());

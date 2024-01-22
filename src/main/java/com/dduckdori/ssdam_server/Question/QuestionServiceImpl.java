@@ -4,6 +4,7 @@ import com.dduckdori.ssdam_server.Answer.AnswerList;
 import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import com.dduckdori.ssdam_server.Response.DateResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -15,7 +16,21 @@ public class QuestionServiceImpl implements QuestionService{
 
     @Override
     public QuestionDTO find_question(QuestionDTO questionDTO) {
-        return questionRepository.find_question(questionDTO);
+        QuestionDTO ans_questionDto = questionRepository.find_question(questionDTO);
+        if(ans_questionDto == null){
+            return null;
+        }
+        int Ans_Num = questionRepository.find_ans_num(ans_questionDto);
+        int Family_Mem_Num = questionRepository.FamilyNum(questionDTO.getInvite_cd());
+
+        if(Family_Mem_Num == Ans_Num){
+            ans_questionDto.setRpy_yn("True");
+        }
+        else{
+            ans_questionDto.setRpy_yn("False");
+        }
+        ans_questionDto.setNon_ans_num(Family_Mem_Num-Ans_Num);
+        return ans_questionDto;
     }
 
     @Override

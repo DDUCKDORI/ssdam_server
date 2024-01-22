@@ -38,6 +38,7 @@ public class AnswerController {
         //반환되는 데이터 만들건데 특정 초대코드에 해당하는 모든 유저 답변 여부 반환해주어야함
         // int non_ans_num = answerService.InviteCd_Ans_YN(answerDTO.getInvite_cd());
         int non_ans_num = answerService.complete_answer_YN(answerDTO);
+
         answerResponse.setNon_ans_num(non_ans_num);
         if(non_ans_num==0){
             answerResponse.setAll_ans_yn("True");
@@ -46,7 +47,7 @@ public class AnswerController {
             answerResponse.setAll_ans_yn("False");
         }
         answerResponse.setResult("Success");
-
+        System.out.println("answerResponse = " + answerResponse);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(answerResponse,httpHeaders, HttpStatus.OK);

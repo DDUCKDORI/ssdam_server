@@ -43,7 +43,7 @@ public class QuestionController {
         }
         EtcResponse etcResponse = new EtcResponse();
         etcResponse.setResult("success");
-        etcResponse.setFamily_num(fam_num);
+        etcResponse.setFamily_num(fam_num-1);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
 
