@@ -1,7 +1,9 @@
 package com.dduckdori.ssdam_server.Login;
 
+import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import com.dduckdori.ssdam_server.Exception.TryAgainException;
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
+import com.dduckdori.ssdam_server.Question.QuestionRepository;
 import com.dduckdori.ssdam_server.Response.ResponseDTO;
 import com.dduckdori.ssdam_server.Scheduler.SchedulerDTO;
 import com.dduckdori.ssdam_server.Scheduler.SchedulerRepository;
@@ -59,9 +61,11 @@ public class AppleLoginService implements LoginService {
     private final static String APPLE_AUTH_URL="https://appleid.apple.com";
     private final LoginRepository loginRepository;
     private final SchedulerRepository schedulerRepository;
-    public AppleLoginService(LoginRepository loginRepository, SchedulerRepository schedulerRepository){
+    private final QuestionRepository questionRepository;
+    public AppleLoginService(LoginRepository loginRepository, SchedulerRepository schedulerRepository, QuestionRepository questionRepository){
         this.loginRepository=loginRepository;
         this.schedulerRepository = schedulerRepository;
+        this.questionRepository = questionRepository;
     }
 
     @Override
@@ -201,7 +205,6 @@ public class AppleLoginService implements LoginService {
     @Override
     public String ReIssueAccessToken(LoginDTO loginDTO) throws IOException, net.minidev.json.parser.ParseException {
         Map<String, String> tokenRequest = getTokenRequest(loginDTO.getRefresh_token(), getClientSecret(),"refresh_token");
-        System.out.println("tokenRequest = " + tokenRequest);
 
         String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/token",tokenRequest);
 
@@ -210,6 +213,20 @@ public class AppleLoginService implements LoginService {
         Object obj = jsonParser.parse(response);
         JSONObject jsonObject = (JSONObject) obj;
         return (String) jsonObject.get("access_token");
+    }
+
+    @Override
+    public void logout_member(LoginDTO loginDTO) {
+        // 로그아웃 -> 멤버 토큰 -> ans_hist -> ans -> sd_send_detlsd(선택) ->member
+        int fam_num=questionRepository.FamilyNum(loginDTO.getInvite_cd());
+
+        int result = loginRepository.delete_personal_data(loginDTO);
+        if(result ==0 ){
+            throw new NotFoundException("잠시후 다시 시도해주세요..");
+        }
+        if(fam_num==1){
+            loginRepository.delete_send_detlsd(loginDTO);
+        }
     }
 
     private String make_InviteCd() {
@@ -224,8 +241,7 @@ public class AppleLoginService implements LoginService {
         return stringBuilder.toString();
     }
     private Map<String, String> getTokenRequest(String s, String clientSecret, String type) {
-        System.out.println("s = " + s);
-        System.out.println("clientSecret = " + clientSecret);
+
         Map<String,String> tokenRequest = new HashMap<>();
         tokenRequest.put("client_id", APPLE_CLIENT_ID); //그대로
         tokenRequest.put("client_secret", clientSecret); //그대로

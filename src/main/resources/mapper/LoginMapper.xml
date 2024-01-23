@@ -30,4 +30,15 @@
         FROM SD_MEMBER A
         WHERE A.INVITE_CD = #{invite_cd}
     </select>
+    <delete id="delet_personal_data" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
+    DELETE FROM SD_MEMBER_TOKEN WHERE INVITE_CD = #{invite_cd} AND MEM_ID = #{mem_id};
+    DELETE FROM SD_ANS_HIST WHERE INVITE_CD = #{invite_cd} AND MEM_ID = #{mem_id};
+    DELETE FROM SD_ANSWER WHERE INVITE_CD = #{invite_cd} AND MEM_ID = #{mem_id};
+    DELETE FROM SD_MEMBER WHERE INVITE_CD = #{invite_cd} AND MEM_ID = #{mem_id};
+
+    </delete>
+    <delete id="delete_send_detlsd" parameterType="com.dduckdori.ssdam_server.Login.LoginDTO">
+        DELETE FROM SD_SEND_DETLSD WHERE INVITE_CD = #{invite_cd}
+    </delete>
+
 </mapper>

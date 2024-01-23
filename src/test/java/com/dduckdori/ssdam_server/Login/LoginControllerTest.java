@@ -1,19 +1,43 @@
 package com.dduckdori.ssdam_server.Login;
 
+import com.dduckdori.ssdam_server.Answer.AnswerDTO;
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
 
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Random;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest
 class LoginControllerTest {
-
+    MockMvc mockMvc;
+    @Autowired
+    private WebApplicationContext wac;
     private LoginService loginService;
+    private ObjectMapper objectMapper = new ObjectMapper();
+    @BeforeEach
+    public void setup(){
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac)
+                .addFilter(new CharacterEncodingFilter("UTF-8", true))
+                .build();
+    }
     @Autowired
     public LoginControllerTest(LoginService loginService){
         this.loginService=loginService;
@@ -47,5 +71,40 @@ class LoginControllerTest {
             stringBuilder.append(rd.nextInt(10));
         }
         System.out.println("stringBuilder = " + stringBuilder);
+    }
+
+    @Test
+    @Transactional
+    @DisplayName("회원탈퇴_성공")
+    @WithMockUser
+    public void logoutMember() throws Exception{
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setInvite_cd("WZFP6785");
+        loginDTO.setMem_id(1);
+
+        this.mockMvc
+                .perform(post("/ssdam/logout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginDTO))
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+    @Test
+    @Transactional
+    @DisplayName("회원탈퇴_실패")
+    @WithMockUser
+    public void logoutMember_Fail() throws Exception{
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setInvite_cd("WZFP6785");
+        loginDTO.setMem_id(100);
+
+        this.mockMvc
+                .perform(post("/ssdam/logout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginDTO))
+                )
+                .andExpect(status().is4xxClientError())
+                .andDo(print());
     }
 }
