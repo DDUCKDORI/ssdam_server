@@ -151,11 +151,13 @@ public class AppleLoginService implements LoginService {
     @Override
     @Transactional
     public ResponseDTO joinMember(LoginDTO loginDTO) {
+        int new_mem_id = -1;
         //초대코드 여부 판별
         if(loginDTO.getInvite_cd()==null || loginDTO.getInvite_cd()==""){
             //8자리 초대코드 만들기
             loginDTO.setInvite_cd(make_InviteCd());
             loginDTO.setMem_id(1);
+            new_mem_id=1;
         }
         else{
             int mem_id = loginRepository.get_mem_id(loginDTO);
@@ -163,6 +165,7 @@ public class AppleLoginService implements LoginService {
                 throw new TryAgainException("로그인에 실패했어요.. 잠시 후 다시 시도해 주세요!");
             }
             loginDTO.setMem_id(mem_id+1);
+            new_mem_id=mem_id+1;
         }
 
         int result = loginRepository.join_member(loginDTO);
@@ -191,6 +194,7 @@ public class AppleLoginService implements LoginService {
         ResponseDTO responseDTO = loginRepository.find_mem_info(loginDTO);
         responseDTO.setAccess_token(loginDTO.getAccess_token());
         responseDTO.setRefresh_token(loginDTO.getRefresh_token());
+        responseDTO.setMem_id(new_mem_id);
         return responseDTO;
     }
 

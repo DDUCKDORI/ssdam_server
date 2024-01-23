@@ -71,7 +71,7 @@ public class LoginController {
         httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
         ResponseDTO responseDTO = loginService.joinMember(loginDTO);
         //SD_SEND_DETLSD(발송내역 테이블)에 1,1 질문 추가
-
+        System.out.println("responseDTO = " + responseDTO);
         return new ResponseEntity<>(responseDTO,httpHeaders,HttpStatus.OK);
     }
 }

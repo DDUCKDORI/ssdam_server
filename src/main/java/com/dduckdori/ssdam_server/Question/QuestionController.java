@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import java.nio.charset.Charset;
+import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,7 +33,10 @@ public class QuestionController {
             throw new NotFoundException("해당 사용자를 찾을 수 없습니다..");
         }
         questionDTO.setResult("Success");
-
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("questionDTO = " + questionDTO);
+        System.out.println("************************************************");
         return new ResponseEntity<>(questionDTO,httpHeaders, HttpStatus.OK);
     }
     @GetMapping("/ssdam/family/{invite_cd}")
@@ -46,7 +50,10 @@ public class QuestionController {
         etcResponse.setFamily_num(fam_num-1);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
-
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("etcResponse = " + etcResponse);
+        System.out.println("************************************************");
         return new ResponseEntity<>(etcResponse,httpHeaders,HttpStatus.OK);
     }
     @GetMapping("/ssdam/question/{date}/{invite_cd}")
@@ -56,6 +63,10 @@ public class QuestionController {
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
 
         DateResponse dateResponse = questionService.find_question_date(date,invite_cd);
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("dateResponse = " + dateResponse);
+        System.out.println("************************************************");
         return new ResponseEntity<>(dateResponse,httpHeaders,HttpStatus.OK);
     }
 }

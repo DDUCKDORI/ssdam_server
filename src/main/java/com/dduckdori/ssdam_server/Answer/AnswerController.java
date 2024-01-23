@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.Charset;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @RestController
@@ -47,7 +48,10 @@ public class AnswerController {
             answerResponse.setAll_ans_yn("False");
         }
         answerResponse.setResult("Success");
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
         System.out.println("answerResponse = " + answerResponse);
+        System.out.println("************************************************");
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(answerResponse,httpHeaders, HttpStatus.OK);
@@ -71,6 +75,10 @@ public class AnswerController {
         else{
             throw new NotFoundException("해당 질문이 없어요..");
         }
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("answer_list = " + answer_list);
+        System.out.println("************************************************");
         return new ResponseEntity<>(answer_list,httpHeaders, HttpStatus.OK);
     }
 
@@ -94,6 +102,10 @@ public class AnswerController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("answerResponse = " + answerResponse);
+        System.out.println("************************************************");
         return new ResponseEntity<>(answerResponse,httpHeaders, HttpStatus.OK);
     }
     @GetMapping("/ssdam/answer/{invite_cd}/{year_month}")
@@ -108,6 +120,10 @@ public class AnswerController {
         AnswerCompleteResponse answerCompleteResponse = new AnswerCompleteResponse();
         answerCompleteResponse.setResult("Success");
         answerCompleteResponse.setDate(answerService.Find_Complete_Ans_Date(hashMap));
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("answerCompleteResponse = " + answerCompleteResponse);
+        System.out.println("************************************************");
         return new ResponseEntity<>(answerCompleteResponse,httpHeaders, HttpStatus.OK);
     }
 }
