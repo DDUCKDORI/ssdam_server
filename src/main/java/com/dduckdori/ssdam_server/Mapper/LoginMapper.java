@@ -13,4 +13,8 @@ public interface LoginMapper {
     ResponseDTO find_mem_info(LoginDTO loginDTO);
 
     int get_mem_id(LoginDTO loginDTO);
+
+    int delete_send_detlsd(LoginDTO loginDTO);
+
+    int delet_personal_data(LoginDTO loginDTO);
 }

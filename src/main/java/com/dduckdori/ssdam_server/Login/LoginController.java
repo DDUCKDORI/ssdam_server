@@ -1,5 +1,6 @@
 package com.dduckdori.ssdam_server.Login;
 
+import com.dduckdori.ssdam_server.Exception.ExceptionResponse;
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
 import com.dduckdori.ssdam_server.Response.ResponseDTO;
 import com.dduckdori.ssdam_server.Scheduler.SchedulerService;
@@ -73,5 +74,15 @@ public class LoginController {
         //SD_SEND_DETLSD(발송내역 테이블)에 1,1 질문 추가
         System.out.println("responseDTO = " + responseDTO);
         return new ResponseEntity<>(responseDTO,httpHeaders,HttpStatus.OK);
+    }
+    // 로그아웃 -> 멤버 토큰 -> ans_hist -> ans -> sd_send_detlsd(선택) ->member
+    @RequestMapping(value = "/ssdam/logout",method = RequestMethod.POST)
+    public ResponseEntity<ExceptionResponse> logout(@RequestBody LoginDTO loginDTO){
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
+        loginService.logout_member(loginDTO);
+        ExceptionResponse exceptionResponse = new ExceptionResponse();
+        exceptionResponse.setResult("Success");
+        return new ResponseEntity<>(exceptionResponse,httpHeaders,HttpStatus.OK);
     }
 }

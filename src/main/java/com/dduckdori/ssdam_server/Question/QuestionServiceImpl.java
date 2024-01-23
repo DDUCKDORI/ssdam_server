@@ -24,10 +24,10 @@ public class QuestionServiceImpl implements QuestionService{
         int Family_Mem_Num = questionRepository.FamilyNum(questionDTO.getInvite_cd());
 
         if(ans_questionDto.getAns_cn() != null){
-            ans_questionDto.setRpy_yn("true");
+            ans_questionDto.setRpy_yn("True");
         }
         else{
-            ans_questionDto.setRpy_yn("false");
+            ans_questionDto.setRpy_yn("False");
         }
         ans_questionDto.setNon_ans_num(Family_Mem_Num-Ans_Num);
         return ans_questionDto;

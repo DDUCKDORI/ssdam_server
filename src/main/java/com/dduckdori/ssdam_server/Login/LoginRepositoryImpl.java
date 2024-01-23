@@ -34,4 +34,16 @@ public class LoginRepositoryImpl implements LoginRepository {
     public int get_mem_id(LoginDTO loginDTO) {
         return loginMapper.get_mem_id(loginDTO);
     }
+
+
+    @Override
+    public int delete_send_detlsd(LoginDTO loginDTO) {
+        return loginMapper.delete_send_detlsd(loginDTO);
+    }
+
+    @Override
+    public int delete_personal_data(LoginDTO loginDTO) {
+        return loginMapper.delet_personal_data(loginDTO);
+    }
+
 }

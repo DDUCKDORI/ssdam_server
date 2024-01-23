@@ -28,4 +28,12 @@ class AppleLoginServiceTest {
         loginDTO.setFm_dvcd("01");
         loginService.joinMember(loginDTO);
     }
+    @Test
+    @Transactional
+    void logoutMember(){
+        LoginDTO loginDTO = new LoginDTO();
+        loginDTO.setInvite_cd("WZFP6785");
+        loginDTO.setMem_id(1);
+        loginService.logout_member(loginDTO);
+    }
 }
