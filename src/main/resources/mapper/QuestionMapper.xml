@@ -24,7 +24,7 @@
         WHERE A.CATE_ID =#{Cate_id} AND A.QUST_ID=#{Qust_id} AND A.INVITE_CD=#{Invite_cd} AND B.ANS_CN IS NOT NULL
     </select>
     <select id="find_question_specific_date" parameterType="Map" resultType="com.dduckdori.ssdam_server.Response.DateResponse">
-        SELECT A.QUST_ID, A.CATE_ID, A.QUST_CN
+        SELECT A.QUST_ID, A.CATE_ID, A.QUST_CN, A.FST_INPUT_DTM AS QUS_DTM
         FROM SD_QUESTION A
         JOIN SD_SEND_DETLSD B
             ON A.QUST_ID = B.QUST_ID
