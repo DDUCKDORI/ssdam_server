@@ -31,9 +31,9 @@ class AppleLoginServiceTest {
     @Test
     @Transactional
     void logoutMember(){
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setInvite_cd("WZFP6785");
-        loginDTO.setMem_id(1);
-        loginService.logout_member(loginDTO);
+        LogoutDTO logoutDTO = new LogoutDTO();
+        logoutDTO.setInvite_cd("WZFP6785");
+        logoutDTO.setMem_id(1);
+        loginService.logout_member(logoutDTO);
     }
 }

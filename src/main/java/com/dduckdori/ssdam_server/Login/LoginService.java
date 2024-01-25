@@ -14,5 +14,5 @@ public interface LoginService {
     LoginDTO authToken(AppleDTO appleDTO) throws IOException, net.minidev.json.parser.ParseException, ParseException;
     ResponseDTO joinMember(LoginDTO loginDTO);
     String ReIssueAccessToken(LoginDTO loginDTO) throws IOException, net.minidev.json.parser.ParseException;
-    void logout_member(LoginDTO loginDTO);
+    void logout_member(LogoutDTO logoutDTO) throws IOException;
 }

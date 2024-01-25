@@ -77,10 +77,11 @@ public class LoginController {
     }
     // 로그아웃 -> 멤버 토큰 -> ans_hist -> ans -> sd_send_detlsd(선택) ->member
     @RequestMapping(value = "/ssdam/logout",method = RequestMethod.POST)
-    public ResponseEntity<ExceptionResponse> logout(@RequestBody LoginDTO loginDTO){
+    public ResponseEntity<ExceptionResponse> logout(@RequestBody LogoutDTO logoutDTO) throws IOException {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application", "json", Charset.forName("UTF-8")));
-        loginService.logout_member(loginDTO);
+
+        loginService.logout_member(logoutDTO);
         ExceptionResponse exceptionResponse = new ExceptionResponse();
         exceptionResponse.setResult("Success");
         return new ResponseEntity<>(exceptionResponse,httpHeaders,HttpStatus.OK);

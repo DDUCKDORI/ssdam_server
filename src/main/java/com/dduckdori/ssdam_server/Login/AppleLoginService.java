@@ -216,16 +216,24 @@ public class AppleLoginService implements LoginService {
     }
 
     @Override
-    public void logout_member(LoginDTO loginDTO) {
+    public void logout_member(LogoutDTO logoutDTO) throws IOException {
         // 로그아웃 -> 멤버 토큰 -> ans_hist -> ans -> sd_send_detlsd(선택) ->member
-        int fam_num=questionRepository.FamilyNum(loginDTO.getInvite_cd());
+        if(logoutDTO.getAuthorization_code()!=null){
+            Map<String, String> tokenRequest = getTokenRequest(logoutDTO.getAuthorization_code(), getClientSecret(),"authorization_code");
 
-        int result = loginRepository.delete_personal_data(loginDTO);
+            String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/revoke",tokenRequest);
+            System.out.println("response = " + response);
+        }
+        System.out.println("logoutDTO.getAuthorization_code() = " + logoutDTO.getAuthorization_code());
+
+        int fam_num=questionRepository.FamilyNum(logoutDTO.getInvite_cd());
+
+        int result = loginRepository.delete_personal_data(logoutDTO);
         if(result ==0 ){
             throw new NotFoundException("잠시후 다시 시도해주세요..");
         }
         if(fam_num==1){
-            loginRepository.delete_send_detlsd(loginDTO);
+            loginRepository.delete_send_detlsd(logoutDTO);
         }
     }
 

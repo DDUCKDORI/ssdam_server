@@ -36,10 +36,10 @@ class LoginRepositoryImplTest {
     @Test
     @Transactional
     public void delete_personal_data(){
-        LoginDTO loginDTO = new LoginDTO();
-        loginDTO.setInvite_cd("WZFP675");
-        loginDTO.setMem_id(2);
-        int result = loginMapper.delet_personal_data(loginDTO);
+        LogoutDTO logoutDTO = new LogoutDTO();
+        logoutDTO.setInvite_cd("WZFP675");
+        logoutDTO.setMem_id(2);
+        int result = loginMapper.delet_personal_data(logoutDTO);
         System.out.println("result = " + result);
     }
 }

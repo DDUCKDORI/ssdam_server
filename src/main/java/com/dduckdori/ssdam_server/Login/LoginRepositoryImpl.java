@@ -37,13 +37,13 @@ public class LoginRepositoryImpl implements LoginRepository {
 
 
     @Override
-    public int delete_send_detlsd(LoginDTO loginDTO) {
-        return loginMapper.delete_send_detlsd(loginDTO);
+    public int delete_send_detlsd(LogoutDTO logoutDTO) {
+        return loginMapper.delete_send_detlsd(logoutDTO);
     }
 
     @Override
-    public int delete_personal_data(LoginDTO loginDTO) {
-        return loginMapper.delet_personal_data(loginDTO);
+    public int delete_personal_data(LogoutDTO logoutDTO) {
+        return loginMapper.delet_personal_data(logoutDTO);
     }
 
 }
