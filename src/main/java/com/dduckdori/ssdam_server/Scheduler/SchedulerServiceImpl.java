@@ -18,13 +18,20 @@ public class SchedulerServiceImpl implements SchedulerService {
         ConcurrentHashMap<String, List<SchedulerDTO>> rciv_qust= new ConcurrentHashMap<>();
         List<SchedulerDTO> l_rciv_qust=schedulerRepository.getComplete_Answer();
         ListIterator<SchedulerDTO> iterator = l_rciv_qust.listIterator();
-        List<String> complete_answer = new ArrayList<>();
-        while(iterator.hasNext()) {
 
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formateNow = now.format(formatter);
+
+        List<String> complete_answer = new ArrayList<>();
+
+        while(iterator.hasNext()) {
             SchedulerDTO schedulerDTO = iterator.next();
             //구성원 모두가 답변 완료한 초대코드 뽑아내기
-            if (schedulerDTO.getMem_num() == schedulerDTO.getAns_num()) {
-                complete_answer.add(schedulerDTO.getInvite_cd());
+            if(formateNow != schedulerDTO.getArrive_dtm()){
+                if (schedulerDTO.getMem_num() == schedulerDTO.getAns_num()) {
+                    complete_answer.add(schedulerDTO.getInvite_cd());
+                }
             }
         }
         Map<String,Object> map = new HashMap<String, Object>();
