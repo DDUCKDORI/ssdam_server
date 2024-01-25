@@ -108,15 +108,14 @@ public class AnswerController {
         System.out.println("************************************************");
         return new ResponseEntity<>(answerResponse,httpHeaders, HttpStatus.OK);
     }
-    @GetMapping("/ssdam/answer/{invite_cd}/{year_month}")
-    public ResponseEntity<AnswerCompleteResponse> Complete_Ans_List(@PathVariable String invite_cd, @PathVariable String year_month){
+    @GetMapping("/ssdam/answer/complete/{invite_cd}")
+    public ResponseEntity<AnswerCompleteResponse> Complete_Ans_List(@PathVariable String invite_cd){
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
 
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("Invite_cd", invite_cd);
-        hashMap.put("Year_Month",year_month);
         AnswerCompleteResponse answerCompleteResponse = new AnswerCompleteResponse();
         answerCompleteResponse.setResult("Success");
         answerCompleteResponse.setDate(answerService.Find_Complete_Ans_Date(hashMap));
