@@ -40,5 +40,7 @@
     <delete id="delete_send_detlsd" parameterType="com.dduckdori.ssdam_server.Login.LogoutDTO">
         DELETE FROM SD_SEND_DETLSD WHERE INVITE_CD = #{invite_cd}
     </delete>
-
+    <select id="get_refresh_token" parameterType="com.dduckdori.ssdam_server.Login.LogoutDTO" resultType="String">
+        SELECT REFRESH_TOKEN FROM SD_MEMBER_TOKEN WHERE INVITE_CD = #{invite_cd} AND MEM_ID=#{mem_id}
+    </select>
 </mapper>

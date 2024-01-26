@@ -219,10 +219,12 @@ public class AppleLoginService implements LoginService {
     public void logout_member(LogoutDTO logoutDTO) throws IOException {
         // 로그아웃 -> 멤버 토큰 -> ans_hist -> ans -> sd_send_detlsd(선택) ->member
         if(logoutDTO.getAuthorization_code()!=null){
-            Map<String, String> tokenRequest = getTokenRequest(logoutDTO.getAuthorization_code(), getClientSecret(),"authorization_code");
+            String refresh_token = loginRepository.get_refresh_token(logoutDTO);
+            Map<String, String> tokenRequest = getTokenRequest(refresh_token, getClientSecret(),"revoke_token");
 
             String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/revoke",tokenRequest);
             System.out.println("response = " + response);
+            System.out.println("refresh_token = " + refresh_token);
         }
         System.out.println("logoutDTO.getAuthorization_code() = " + logoutDTO.getAuthorization_code());
 
@@ -255,12 +257,19 @@ public class AppleLoginService implements LoginService {
         tokenRequest.put("client_secret", clientSecret); //그대로
         if(type.equals("refresh_token")){
             tokenRequest.put("refresh_token",s);
+            tokenRequest.put("redirect_uri", "https://test-ssdam.site/ssdam/apple/login/callback");
+            tokenRequest.put("grant_type", type); // authorization_code || refresh_token
         }
         else if(type.equals("authorization_code")){
             tokenRequest.put("code", s); // -> code 값 || refresh_token
+            tokenRequest.put("redirect_uri", "https://test-ssdam.site/ssdam/apple/login/callback");
+            tokenRequest.put("grant_type", type); // authorization_code || refresh_token
         }
-        tokenRequest.put("grant_type", type); // authorization_code || refresh_token
-        tokenRequest.put("redirect_uri", "https://test-ssdam.site/ssdam/apple/login/callback");
+        else if(type.equals("revoke_token")){
+            tokenRequest.put("token",s);
+            tokenRequest.put("token_type_hint", "refresh_token"); // authorization_code || refresh_token
+        }
+
         return tokenRequest;
     }
 

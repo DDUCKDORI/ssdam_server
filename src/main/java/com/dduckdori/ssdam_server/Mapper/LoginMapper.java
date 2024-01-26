@@ -18,4 +18,6 @@ public interface LoginMapper {
     int delete_send_detlsd(LogoutDTO logoutDTO);
 
     int delet_personal_data(LogoutDTO logoutDTO);
+
+    String get_refresh_token(LogoutDTO logoutDTO);
 }

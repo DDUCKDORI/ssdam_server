@@ -12,4 +12,6 @@ public interface LoginRepository {
     int delete_send_detlsd(LogoutDTO logoutDTO);
 
     int delete_personal_data(LogoutDTO logoutDTO);
+
+    String get_refresh_token(LogoutDTO logoutDTO);
 }

@@ -46,4 +46,9 @@ public class LoginRepositoryImpl implements LoginRepository {
         return loginMapper.delet_personal_data(logoutDTO);
     }
 
+    @Override
+    public String get_refresh_token(LogoutDTO logoutDTO) {
+        return loginMapper.get_refresh_token(logoutDTO);
+    }
+
 }
