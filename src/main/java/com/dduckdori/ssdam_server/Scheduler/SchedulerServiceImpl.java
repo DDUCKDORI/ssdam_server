@@ -28,9 +28,11 @@ public class SchedulerServiceImpl implements SchedulerService {
         while(iterator.hasNext()) {
             SchedulerDTO schedulerDTO = iterator.next();
             //구성원 모두가 답변 완료한 초대코드 뽑아내기
-            if(formateNow != schedulerDTO.getArrive_dtm()){
+
+            if(!formateNow.equals(schedulerDTO.getArrive_dtm())){
                 if (schedulerDTO.getMem_num() == schedulerDTO.getAns_num()) {
                     complete_answer.add(schedulerDTO.getInvite_cd());
+
                 }
             }
         }
