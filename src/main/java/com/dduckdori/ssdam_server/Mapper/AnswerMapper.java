@@ -20,4 +20,6 @@ public interface AnswerMapper {
     CompleteDTO Complete_Answer_YN(AnswerDTO answerDTO);
 
     CompleteDTO[] Find_Complete_Ans_date(HashMap<String, String> hashMap);
+
+    int Find_Question(AnswerDTO answerDTO);
 }

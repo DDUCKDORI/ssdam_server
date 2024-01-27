@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.Charset;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @RestController
@@ -25,6 +26,10 @@ public class AnswerController {
     public ResponseEntity<AnswerResponse> Save_Answer(@Valid @RequestBody AnswerDTO answerDTO){
         System.out.println("answerDTO = " + answerDTO);
         AnswerResponse answerResponse = new AnswerResponse();
+        int count = answerService.Find_Question(answerDTO);
+        if(count == 0){
+            throw new NotFoundException("등록된 질문이 없어요..");
+        }
         int result = answerService.Save_Answer(answerDTO);
         if(result != 1){
             throw new TryAgainException("잠시 후 다시 시도해주시기 바랍니다.");
@@ -34,6 +39,7 @@ public class AnswerController {
         //반환되는 데이터 만들건데 특정 초대코드에 해당하는 모든 유저 답변 여부 반환해주어야함
         // int non_ans_num = answerService.InviteCd_Ans_YN(answerDTO.getInvite_cd());
         int non_ans_num = answerService.complete_answer_YN(answerDTO);
+
         answerResponse.setNon_ans_num(non_ans_num);
         if(non_ans_num==0){
             answerResponse.setAll_ans_yn("True");
@@ -42,7 +48,10 @@ public class AnswerController {
             answerResponse.setAll_ans_yn("False");
         }
         answerResponse.setResult("Success");
-
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("answerResponse = " + answerResponse);
+        System.out.println("************************************************");
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
         return new ResponseEntity<>(answerResponse,httpHeaders, HttpStatus.OK);
@@ -66,6 +75,10 @@ public class AnswerController {
         else{
             throw new NotFoundException("해당 질문이 없어요..");
         }
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("answer_list = " + answer_list);
+        System.out.println("************************************************");
         return new ResponseEntity<>(answer_list,httpHeaders, HttpStatus.OK);
     }
 
@@ -89,20 +102,27 @@ public class AnswerController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("answerResponse = " + answerResponse);
+        System.out.println("************************************************");
         return new ResponseEntity<>(answerResponse,httpHeaders, HttpStatus.OK);
     }
-    @GetMapping("/ssdam/answer/{invite_cd}/{year_month}")
-    public ResponseEntity<AnswerCompleteResponse> Complete_Ans_List(@PathVariable String invite_cd, @PathVariable String year_month){
+    @GetMapping("/ssdam/answer/complete/{invite_cd}")
+    public ResponseEntity<AnswerCompleteResponse> Complete_Ans_List(@PathVariable String invite_cd){
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(new MediaType("application","json", Charset.forName("UTF-8")));
 
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("Invite_cd", invite_cd);
-        hashMap.put("Year_Month",year_month);
         AnswerCompleteResponse answerCompleteResponse = new AnswerCompleteResponse();
         answerCompleteResponse.setResult("Success");
         answerCompleteResponse.setDate(answerService.Find_Complete_Ans_Date(hashMap));
+        System.out.println("************************************************");
+        System.out.println("LocalDateTime.now() = " + LocalDateTime.now());
+        System.out.println("answerCompleteResponse = " + answerCompleteResponse);
+        System.out.println("************************************************");
         return new ResponseEntity<>(answerCompleteResponse,httpHeaders, HttpStatus.OK);
     }
 }

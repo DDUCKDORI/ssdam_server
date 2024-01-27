@@ -13,4 +13,6 @@ public interface QuestionRepository {
     DateResponse find_question_date(HashMap<String, String> param);
 
     AnswerList[] find_answer_date(DateResponse dateResponse);
+
+    int find_ans_num(QuestionDTO questionDTO);
 }

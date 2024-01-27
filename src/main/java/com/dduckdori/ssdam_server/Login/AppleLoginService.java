@@ -1,8 +1,13 @@
 package com.dduckdori.ssdam_server.Login;
 
+import com.dduckdori.ssdam_server.Exception.NotFoundException;
 import com.dduckdori.ssdam_server.Exception.TryAgainException;
 import com.dduckdori.ssdam_server.Exception.UnAuthroizedAccessException;
+import com.dduckdori.ssdam_server.Question.QuestionRepository;
 import com.dduckdori.ssdam_server.Response.ResponseDTO;
+import com.dduckdori.ssdam_server.Scheduler.SchedulerDTO;
+import com.dduckdori.ssdam_server.Scheduler.SchedulerRepository;
+import com.dduckdori.ssdam_server.Scheduler.SchedulerService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.*;
@@ -31,12 +36,11 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 
 @Service
@@ -56,8 +60,12 @@ public class AppleLoginService implements LoginService {
 
     private final static String APPLE_AUTH_URL="https://appleid.apple.com";
     private final LoginRepository loginRepository;
-    public AppleLoginService(LoginRepository loginRepository){
+    private final SchedulerRepository schedulerRepository;
+    private final QuestionRepository questionRepository;
+    public AppleLoginService(LoginRepository loginRepository, SchedulerRepository schedulerRepository, QuestionRepository questionRepository){
         this.loginRepository=loginRepository;
+        this.schedulerRepository = schedulerRepository;
+        this.questionRepository = questionRepository;
     }
 
     @Override
@@ -147,11 +155,13 @@ public class AppleLoginService implements LoginService {
     @Override
     @Transactional
     public ResponseDTO joinMember(LoginDTO loginDTO) {
+        int new_mem_id = -1;
         //초대코드 여부 판별
         if(loginDTO.getInvite_cd()==null || loginDTO.getInvite_cd()==""){
             //8자리 초대코드 만들기
             loginDTO.setInvite_cd(make_InviteCd());
             loginDTO.setMem_id(1);
+            new_mem_id=1;
         }
         else{
             int mem_id = loginRepository.get_mem_id(loginDTO);
@@ -159,6 +169,7 @@ public class AppleLoginService implements LoginService {
                 throw new TryAgainException("로그인에 실패했어요.. 잠시 후 다시 시도해 주세요!");
             }
             loginDTO.setMem_id(mem_id+1);
+            new_mem_id=mem_id+1;
         }
 
         int result = loginRepository.join_member(loginDTO);
@@ -169,16 +180,31 @@ public class AppleLoginService implements LoginService {
         if(result != 1){
             throw new TryAgainException("잠시 후 다시 시도해주시기 바랍니다.");
         }
+        //회원가입과 함께 1,1 질문 add
+        List<SchedulerDTO> input_param = new ArrayList<>();
+        SchedulerDTO schedulerDTO = new SchedulerDTO();
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+        String formateNow = now.format(formatter);
+
+        schedulerDTO.setCate_id(1);
+        schedulerDTO.setQust_id(1);
+        schedulerDTO.setInvite_cd(loginDTO.getInvite_cd());
+        schedulerDTO.setArrive_dtm(formateNow);
+        input_param.add(schedulerDTO);
+
+        schedulerRepository.insert_Question(input_param);
+
         ResponseDTO responseDTO = loginRepository.find_mem_info(loginDTO);
         responseDTO.setAccess_token(loginDTO.getAccess_token());
         responseDTO.setRefresh_token(loginDTO.getRefresh_token());
+        responseDTO.setMem_id(new_mem_id);
         return responseDTO;
     }
 
     @Override
     public String ReIssueAccessToken(LoginDTO loginDTO) throws IOException, net.minidev.json.parser.ParseException {
         Map<String, String> tokenRequest = getTokenRequest(loginDTO.getRefresh_token(), getClientSecret(),"refresh_token");
-        System.out.println("tokenRequest = " + tokenRequest);
 
         String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/token",tokenRequest);
 
@@ -187,6 +213,30 @@ public class AppleLoginService implements LoginService {
         Object obj = jsonParser.parse(response);
         JSONObject jsonObject = (JSONObject) obj;
         return (String) jsonObject.get("access_token");
+    }
+
+    @Override
+    public void logout_member(LogoutDTO logoutDTO) throws IOException {
+        // 로그아웃 -> 멤버 토큰 -> ans_hist -> ans -> sd_send_detlsd(선택) ->member
+        if(logoutDTO.getAuthorization_code()!=null){
+            String refresh_token = loginRepository.get_refresh_token(logoutDTO);
+            Map<String, String> tokenRequest = getTokenRequest(refresh_token, getClientSecret(),"revoke_token");
+
+            String response  = HttpClientUtils.doPost("https://appleid.apple.com/auth/revoke",tokenRequest);
+            System.out.println("response = " + response);
+            System.out.println("refresh_token = " + refresh_token);
+        }
+        System.out.println("logoutDTO.getAuthorization_code() = " + logoutDTO.getAuthorization_code());
+
+        int fam_num=questionRepository.FamilyNum(logoutDTO.getInvite_cd());
+
+        int result = loginRepository.delete_personal_data(logoutDTO);
+        if(result ==0 ){
+            throw new NotFoundException("잠시후 다시 시도해주세요..");
+        }
+        if(fam_num==1){
+            loginRepository.delete_send_detlsd(logoutDTO);
+        }
     }
 
     private String make_InviteCd() {
@@ -201,19 +251,25 @@ public class AppleLoginService implements LoginService {
         return stringBuilder.toString();
     }
     private Map<String, String> getTokenRequest(String s, String clientSecret, String type) {
-        System.out.println("s = " + s);
-        System.out.println("clientSecret = " + clientSecret);
+
         Map<String,String> tokenRequest = new HashMap<>();
         tokenRequest.put("client_id", APPLE_CLIENT_ID); //그대로
         tokenRequest.put("client_secret", clientSecret); //그대로
         if(type.equals("refresh_token")){
             tokenRequest.put("refresh_token",s);
+            tokenRequest.put("redirect_uri", "https://test-ssdam.site/ssdam/apple/login/callback");
+            tokenRequest.put("grant_type", type); // authorization_code || refresh_token
         }
         else if(type.equals("authorization_code")){
             tokenRequest.put("code", s); // -> code 값 || refresh_token
+            tokenRequest.put("redirect_uri", "https://test-ssdam.site/ssdam/apple/login/callback");
+            tokenRequest.put("grant_type", type); // authorization_code || refresh_token
         }
-        tokenRequest.put("grant_type", type); // authorization_code || refresh_token
-        tokenRequest.put("redirect_uri", "https://test-ssdam.site/ssdam/apple/login/callback");
+        else if(type.equals("revoke_token")){
+            tokenRequest.put("token",s);
+            tokenRequest.put("token_type_hint", "refresh_token"); // authorization_code || refresh_token
+        }
+
         return tokenRequest;
     }
 

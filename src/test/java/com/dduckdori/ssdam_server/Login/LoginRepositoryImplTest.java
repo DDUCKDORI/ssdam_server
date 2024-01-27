@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -30,6 +31,15 @@ class LoginRepositoryImplTest {
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setInvite_cd("A");
         int result = loginMapper.get_mem_id(loginDTO);
+        System.out.println("result = " + result);
+    }
+    @Test
+    @Transactional
+    public void delete_personal_data(){
+        LogoutDTO logoutDTO = new LogoutDTO();
+        logoutDTO.setInvite_cd("WZFP675");
+        logoutDTO.setMem_id(2);
+        int result = loginMapper.delet_personal_data(logoutDTO);
         System.out.println("result = " + result);
     }
 }

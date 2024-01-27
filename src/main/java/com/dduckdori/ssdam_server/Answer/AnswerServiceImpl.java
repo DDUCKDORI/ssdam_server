@@ -73,9 +73,14 @@ public class AnswerServiceImpl implements AnswerService{
         CompleteDTO[] completeDTOS = answerRepository.Find_Complete_Ans_date(hashMap);
         for(CompleteDTO completeDTO : completeDTOS){
             if(completeDTO.getMem_num() == completeDTO.getAnswer_num()){
-                arrayList.add(completeDTO.getArrive_dtm().substring(6,8));
+                arrayList.add(completeDTO.getArrive_dtm());
             }
         }
         return arrayList;
+    }
+
+    @Override
+    public int Find_Question(AnswerDTO answerDTO) {
+        return answerRepository.Find_Question(answerDTO);
     }
 }

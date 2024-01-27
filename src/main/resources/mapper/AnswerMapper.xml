@@ -65,15 +65,18 @@
         SELECT C.ARRIVE_DTM,C.INVITE_CD, C.MEM_NUM,IFNULL(D.ANS_NUM,0) AS ANSWER_NUM
         FROM (SELECT ARRIVE_DTM, INVITE_CD,(SELECT COUNT(*) FROM SD_MEMBER WHERE INVITE_CD=#{Invite_cd}) AS MEM_NUM
               FROM SD_SEND_DETLSD
-              WHERE INVITE_CD = #{Invite_cd} AND ARRIVE_DTM LIKE CONCAT(#{Year_Month},'%')) AS C
+              WHERE INVITE_CD = #{Invite_cd} ) AS C
         LEFT JOIN (SELECT A.CATE_ID,A.QUST_ID,A.INVITE_CD,COUNT(*) AS ANS_NUM,A.ARRIVE_DTM
                     FROM SD_SEND_DETLSD AS A
                     JOIN SD_ANSWER AS B
                         ON A.CATE_ID=B.CATE_ID
                         AND A.QUST_ID = B.QUST_ID
                         AND A.INVITE_CD = B.INVITE_CD
-                    WHERE A.INVITE_CD = #{Invite_cd} AND A.ARRIVE_DTM LIKE CONCAT(#{Year_Month},'%')
+                    WHERE A.INVITE_CD = #{Invite_cd}
                     GROUP BY A.CATE_ID,A.QUST_ID,A.INVITE_CD) AS D
-        ON C.ARRIVE_DTM = D.ARRIVE_DTM;
+        ON C.ARRIVE_DTM = D.ARRIVE_DTM
+    </select>
+    <select id = "Find_Question" parameterType="com.dduckdori.ssdam_server.Answer.AnswerDTO" resultType="int">
+        SELECT COUNT(*) FROM SD_SEND_DETLSD WHERE CATE_ID = #{Cate_id} AND QUST_ID =#{Qust_id} AND INVITE_CD=#{Invite_cd};
     </select>
 </mapper>
