@@ -30,6 +30,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
     // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
