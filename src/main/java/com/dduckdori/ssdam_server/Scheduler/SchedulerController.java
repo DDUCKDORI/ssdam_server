@@ -31,8 +31,8 @@ public class SchedulerController {
         }
         //h_map에는 초대코드별 발송한 질문들 들어있음.
         //안보낸 질문들 선별
-        //send_question = schedulerService.get_Question(h_map);
-        //schedulerService.send_Question(send_question);
+        send_question = schedulerService.get_Question(h_map);
+        schedulerService.send_Question(send_question);
         System.out.println("End Sending Question Insert : " + LocalDateTime.now());
     }
 
